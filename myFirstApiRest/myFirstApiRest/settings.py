@@ -28,7 +28,7 @@ DEBUG = os.getenv("DEBUG", "True") == "True"
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "tu-proyecto-render.onrender.com",  # <- cámbialo por tu dominio real de Render
+    "https://aurelienychuameni-back.onrender.com/",  # <- cámbialo por tu dominio real de Render
 ]
 
 # Usuario personalizado
