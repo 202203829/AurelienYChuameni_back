@@ -1,0 +1,99 @@
+.container { 
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.productContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.productCard {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.productCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.productCard h2 {
+  font-size: 1.25rem;
+  color: #222;
+  margin-bottom: 8px;
+}
+
+.productCard p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.link:hover {
+  color: #ff6600;
+}
+
+.thumbnail {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+
+/* 🔘 Botones personalizados */
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.editButton,
+.deleteButton {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+/* ✏️ Botón de editar */
+.editButton {
+  background-color: #007bff;
+  color: white;
+}
+
+.editButton:hover {
+  background-color: #0056b3;
+}
+
+/* ❌ Botón de eliminar */
+.deleteButton {
+  background-color: #dc3545;
+  color: white;
+}
+
+.deleteButton:hover {
+  background-color: #a71d2a;
+}

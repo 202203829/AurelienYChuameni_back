@@ -1,0 +1,146 @@
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #222;
+  }
+  
+  .productContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 20px 0;
+  }
+  
+  .productCard {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .productCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .productCard img {
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  
+  .productCard h2 {
+    font-size: 1.25rem;
+    color: #222;
+    margin-bottom: 8px;
+  }
+  
+  .productCard p {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #222;
+  }
+  
+  .productContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 20px 0;
+  }
+  
+  .productCard {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .productCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .productCard img {
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  
+  .productCard h2 {
+    font-size: 1.25rem;
+    color: #222;
+    margin-bottom: 8px;
+  }
+  
+  /* Eliminar subrayado y color de los links */
+  .productCard a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  /* Texto general */
+  .productCard p {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  /* Botones de editar y eliminar */
+  .buttonGroup {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  .editBtn,
+  .deleteBtn {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .editBtn {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .editBtn:hover {
+    background-color: #0056b3;
+  }
+  
+  .deleteBtn {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .deleteBtn:hover {
+    background-color: #a71d2a;
+  }
+  

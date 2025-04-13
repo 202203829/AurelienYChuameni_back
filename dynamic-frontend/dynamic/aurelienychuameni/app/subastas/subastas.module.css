@@ -1,0 +1,153 @@
+/* Eliminar el subrayado de los enlaces en las tarjetas de productos */
+.productCard a {
+  text-decoration: none; /* Elimina el subrayado */
+}
+
+/* Estilos para el contenedor de los filtros */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  max-width: 800px;
+  margin: auto;
+  box-sizing: border-box;
+}
+
+/* Estilo de los inputs de los filtros (select, range, etc.) */
+.filters select,
+.filters input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* Filtro de precio: estilo para el rango de precio */
+.filters input[type="range"] {
+  width: 100%;
+  margin-top: 10px;
+  appearance: none;
+  height: 12px; /* Tamaño adecuado */
+  background: #ff6600;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Estilo del punto (thumb) en la barra de rango */
+.filters input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: #222;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.filters input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: #222;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Filtro de precio: etiqueta de precio */
+.filters span {
+  font-size: 1rem;
+  color: #222; /* Negro para que no sea naranja */
+  font-weight: bold;
+}
+
+/* Estilo para el botón de aplicar filtros */
+.filters button {
+  background-color: #ff6600;
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filters button:hover {
+  background-color: #cc5200; /* Un tono más oscuro al pasar el mouse */
+}
+
+/* Estilos para los títulos y elementos dentro de la cuadrícula de productos */
+.productContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Tarjeta de producto individual */
+.productCard {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+/* Eliminar el estilo de enlace del nombre del producto */
+.productCard h2 {
+  margin: 0 0 10px;
+  font-size: 1.5rem;
+  color: #222;
+  text-decoration: none; /* Elimina el subrayado */
+  transition: color 0.3s ease;
+}
+
+/* Estilos para el resto del texto */
+.productCard p {
+  color: #555;
+  font-size: 1rem;
+  margin: 10px 0;
+}
+
+.productCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+.createButton {
+  background-color: #28a745;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.createButton:hover {
+  background-color: #218838;
+}
+.productCard img {
+  width: 100%;
+  height: 300px; /* Altura fija */
+  object-fit: cover; /* Recorta la imagen si es necesario para llenar el espacio */
+  border-radius: 6px;
+  margin-bottom: 10px;
+}

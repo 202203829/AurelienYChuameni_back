@@ -1,0 +1,44 @@
+/* Fuentes generales */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* Estilos globales: fondo adaptable */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-image: url('/urbanizacion.png'); /* Ajusta la ruta a tu imagen */
+    background-size: cover;           /* La imagen se ajusta al tamaño de la pantalla */
+    background-position: center;      /* Centra la imagen */
+    background-repeat: no-repeat;
+    background-attachment: fixed;      /* Opcional: la imagen se mantiene fija al hacer scroll */
+  }
+  
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #222;
+    color: white;
+    text-align: center;
+    font-size: 8px;
+    padding: 10px 0;
+    z-index: 999;
+}
+
+header {
+    width: 100%;
+    background-color: #222;
+    color: white;
+    text-align: center;
+    position: fixed;
+    top: 50px;
+    z-index: 999;
+}
+
+header h1 {
+    font-size: 28px;
+    margin: 0;
+    font-weight: 600;
+    padding: 10px;
+}

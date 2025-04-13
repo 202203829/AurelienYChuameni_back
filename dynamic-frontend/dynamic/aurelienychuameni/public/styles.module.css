@@ -1,0 +1,210 @@
+/* Fuentes generales */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 15px;
+    background-color: #333;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.menu ul {
+    display: flex;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    align-items: center;
+}
+
+.menu ul li {
+    margin: 0 10px;
+}
+
+.menu .right {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.menu .middle {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.menu ul li a {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    font-size: 15px;
+    color: white;
+    text-decoration: none;
+}
+
+.menu ul li a img {
+    height: 30px;
+}
+
+.right a {
+    padding: 8px 16px;
+    background-color: #ff6600;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.right a:hover {
+    background-color: #cc5200;
+}
+
+header {
+    width: 100%;
+    background-color: #222;
+    color: white;
+    text-align: center;
+    position: fixed;
+    top: 50px;
+    z-index: 999;
+}
+
+header h1 {
+    font-size: 28px;
+    margin: 0;
+    font-weight: 600;
+    padding: 10px;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li a:hover {
+    background-color: #111;
+}
+  
+main {
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 100px;
+    margin-bottom: 50px;  /* Espacio adicional para no solapar con el footer */
+    border-radius: 6px;
+    text-align: center;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    flex-direction: column;
+}
+
+.big-label {
+    font-size: 22px;
+    font-weight: bold;
+    color: #ff6600;
+}
+
+.search-container input {
+    width: 60%;
+    padding: 12px;
+    font-size: 18px;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    outline: none;
+    text-align: center;
+}
+
+.search-container button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #222;
+    color: white;
+    cursor: pointer;
+}
+
+.search-container button:hover {
+    background-color: #444;
+}
+
+.product-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    max-width: 800px;
+}
+
+.product-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: calc(50% - 20px); /* 2 columnas */
+    text-align: center;
+}
+
+.product-card img {
+    width: 100%;
+    border-radius: 6px;
+}
+
+.product-card h2 {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.product-card p {
+    font-size: 14px;
+    color: #555;
+}
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #222;  /* Puedes cambiar el color de fondo si lo prefieres */
+    color: white;
+    text-align: center;
+    font-size: 8px;  /* Tamaño de fuente ajustado */
+    padding: 10px 0;
+    z-index: 999; /* Para asegurarse de que esté por encima del contenido */
+}
+
+body {
+    background-image: url('urbanizacion.png');
+}
+
+.product-card a {
+    text-decoration: none;
+    color: inherit; 
+}

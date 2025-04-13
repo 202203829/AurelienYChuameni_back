@@ -1,0 +1,202 @@
+/* Contenedor principal */
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header (barra de navegación) */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #222;
+  z-index: 1000;
+  padding: 10px 0;
+}
+
+/* Menú de navegación */
+.menu {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.navList {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Sección izquierda: logo y barra de búsqueda */
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  height: 30px;
+}
+
+/* Formulario de búsqueda */
+.searchForm {
+  display: flex;
+}
+
+.searchInput {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.searchInput:focus {
+  border-color: #ff6600;
+}
+
+/* Sección central: título */
+.middle {
+  flex-grow: 1;
+  text-align: center;
+  color: #fff;
+}
+
+.middle h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+/* Sección derecha: botones */
+.rightSection {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 8px 16px;
+  background-color: #ff6600;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #cc5200;
+}
+
+/* Área principal */
+.main {
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin: 100px auto 50px; /* Espacio para que no quede tapado por el header */
+  border-radius: 6px;
+  text-align: center;
+}
+
+/* Footer */
+.footer {
+  background-color: #222;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdownContent {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 100;
+  min-width: 180px;
+  padding: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownContent button {
+  background: none;
+  border: none;
+  padding: 8px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdownContent button:hover {
+  background-color: #f1f1f1;
+}
+
+/* styles.module.css */
+.searchContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 600px;
+  padding: 30px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  z-index: 10;
+}
+
+.bigLabel {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: block;
+  color: #222;
+}
+
+.form {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.input {
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 250px;
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #cc5200;
+}
