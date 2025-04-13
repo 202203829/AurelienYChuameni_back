@@ -99,7 +99,81 @@ export default function NuevaSubasta() {
     } catch (err) {
       console.error("❌ Error inesperado:", err);
       setError("❌ Error inesperado al crear la subasta.");
-    }
+    }const handleSubmit = async (e) => {
+      e.preventDefault();
+      const token = getToken();
+    
+      if (!token) {
+        alert("Debes iniciar sesión para crear una subasta");
+        router.push("/login");
+        return;
+      }
+    
+      if (categories.length === 0) {
+        setError("❌ Espera a que se carguen las categorías antes de enviar.");
+        return;
+      }
+    
+      let categoryId;
+    
+      // 1. Buscar si ya existe
+      const categoriaExistente = categories.find(
+        (cat) => cat.name.toLowerCase() === formData.category.toLowerCase()
+      );
+    
+      if (categoriaExistente) {
+        categoryId = categoriaExistente.id;
+      } else {
+        try {
+          const nuevaCat = await createCategory(formData.category, token);
+          categoryId = nuevaCat.id;
+        } catch (err) {
+          // ⚠️ Si ya existe pero no la tienes cargada (por ejemplo, se creó en otro navegador)
+          if (
+            err.response &&
+            err.response.data &&
+            err.response.data.name &&
+            err.response.data.name[0].includes("already exists")
+          ) {
+            const updatedCats = await fetchCategories();
+            const match = updatedCats.find(
+              (cat) => cat.name.toLowerCase() === formData.category.toLowerCase()
+            );
+            if (match) {
+              categoryId = match.id;
+            } else {
+              setError("❌ No se pudo encontrar la categoría ya existente.");
+              return;
+            }
+          } else {
+            console.error("❌ Error al crear categoría:", err);
+            setError("❌ Error inesperado al crear categoría.");
+            return;
+          }
+        }
+      }
+    
+      // 2. Crear subasta
+      try {
+        const nuevaSubasta = await createAuction(
+          { ...formData, category: categoryId },
+          token
+        );
+        if (nuevaSubasta.id) {
+          setMensaje("✅ Subasta creada correctamente");
+          router.push(`/detalle/${nuevaSubasta.id}`);
+        } else {
+          throw nuevaSubasta;
+        }
+      } catch (err) {
+        console.error("❌ Error al crear subasta:", err);
+        const errores = Object.entries(err)
+          .map(([campo, mensajes]) => `${campo}: ${mensajes.join(", ")}`)
+          .join(" | ");
+        setError(`❌ Error al crear la subasta: ${errores}`);
+      }
+    };
+    
   };
 
   return (
