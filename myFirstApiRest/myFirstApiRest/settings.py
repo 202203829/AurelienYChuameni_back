@@ -116,6 +116,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://aurelien-y-chuameni-back-79fr.vercel.app",  # si usas Vercel, añádelo aquí
 ]
+APPEND_SLASH = False
 
 # Django REST Framework
 REST_FRAMEWORK = {
