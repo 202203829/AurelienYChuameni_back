@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:8000/api"; // Cambia esto en producción
+const BASE_URL = "https://aurelienychuameni-back.onrender.com";
+
+fetch(`${BASE_URL}/api/auctions`)
 
 // =============== AUTH =================
 export async function registerUser(data) {
