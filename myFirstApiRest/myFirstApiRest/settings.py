@@ -25,11 +25,8 @@ SECRET_KEY = 'django-insecure-qexvtt*4runs+&ayp#pwrsl$l^^g64^b268e+gk7s_a(-09=gv
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
 # Añade aquí tu dominio de Render
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "https://aurelienychuameni-back.onrender.com/",  # <- cámbialo por tu dominio real de Render
-]
+ALLOWED_HOSTS = ["127.0.0.1", "aurelienychuameni-back.onrender.com"]
+
 
 # Usuario personalizado
 AUTH_USER_MODEL = 'users.CustomUser'
