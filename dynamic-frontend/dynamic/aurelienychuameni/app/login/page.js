@@ -17,19 +17,25 @@ export default function Inicio() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8000/api/token/", {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "https://aurelienychuameni-back.onrender.com/api/token/",
+        {
+          username,
+          password,
+        }
+      );
 
       const accessToken = response.data.access;
       localStorage.setItem("token", accessToken);
 
-      const profileRes = await fetch("http://localhost:8000/api/users/me/", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const profileRes = await fetch(
+        "https://aurelienychuameni-back.onrender.com/api/users/me/",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
       if (!profileRes.ok) throw new Error("Error al obtener perfil");
       const profileData = await profileRes.json();
@@ -38,7 +44,6 @@ export default function Inicio() {
       setLoginError("");
       router.push("/");
     } catch (error) {
-      // Evita log de error innecesario y muestra mensaje controlado
       if (error.response?.status === 401) {
         setLoginError("Usuario o contraseña incorrectos.");
       } else {

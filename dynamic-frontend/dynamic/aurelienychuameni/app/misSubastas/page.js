@@ -34,7 +34,7 @@ export default function MisSubastas() {
     if (!token) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/auctions/${id}/`, {
+      const res = await fetch(`https://aurelienychuameni-back.onrender.com/api/auctions/${id}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
