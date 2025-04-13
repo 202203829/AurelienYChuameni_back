@@ -9,9 +9,6 @@ venv/
 env/
 djangoServer/
 
-# Configuración del entorno
-.env
-*.env
 
 # Archivos de base de datos
 db.sqlite3
