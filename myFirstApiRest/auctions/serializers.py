@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.utils import timezone
 from datetime import timedelta
-from .models import Category, Auction, Bid, Rating
 from drf_spectacular.utils import extend_schema_field
+from .models import Category, Auction, Bid, Rating
 
 
 # -------- CATEGORY --------
@@ -19,14 +19,6 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
 
 # -------- AUCTIONS --------
-from rest_framework import serializers
-from .models import Auction, Category
-from datetime import timedelta
-from django.utils import timezone
-from drf_spectacular.utils import extend_schema_field
-from .serializers import CategoryListCreateSerializer
-
-
 class AuctionListCreateSerializer(serializers.ModelSerializer):
     isOpen = serializers.SerializerMethodField()
     auctioneer = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -60,13 +52,11 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
         ]
 
 
-
-
 class AuctionDetailSerializer(serializers.ModelSerializer):
     isOpen = serializers.SerializerMethodField()
     averageRating = serializers.SerializerMethodField()
     auctioneer = serializers.PrimaryKeyRelatedField(read_only=True)
-    category = CategoryListCreateSerializer(read_only=True)  # ✅ también aquí
+    category = CategoryListCreateSerializer(read_only=True)
 
     @extend_schema_field(serializers.BooleanField())
     def get_isOpen(self, obj):
@@ -81,6 +71,7 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
             if value - creation_date < timedelta(days=15):
                 raise serializers.ValidationError("La subasta debe durar al menos 15 días desde su creación.")
         return value
+
     def get_averageRating(self, obj):
         try:
             ratings = obj.ratings.all()
@@ -90,8 +81,6 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
         except Exception as e:
             print("❌ Error en get_averageRating:", e)
             return None
-
-
 
     class Meta:
         model = Auction
@@ -116,12 +105,15 @@ class BidSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['bidder', 'timestamp', 'bidder_username']
 
+
+# -------- RATINGS --------
 class RatingSerializer(serializers.ModelSerializer):
     def validate_score(self, value):
-        if value<1 or value>5:
+        if value < 1 or value > 5:
             raise serializers.ValidationError("El rating debe estar entre 1 y 5.")
         return value
+
     class Meta:
         model = Rating
-        fields = ['id', 'user', 'auction', 'rating']
+        fields = ['id', 'user', 'auction', 'score']
         read_only_fields = ['user']
