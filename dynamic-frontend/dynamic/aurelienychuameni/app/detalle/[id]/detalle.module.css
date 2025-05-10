@@ -126,3 +126,34 @@
   font-size: 0.95rem;
   color: #222;
 }
+.ratingSection {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ratingSection label {
+  font-weight: bold;
+}
+
+.ratingSection select {
+  padding: 6px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.ratingSection button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.ratingSection button:hover {
+  background-color: #218838;
+}
