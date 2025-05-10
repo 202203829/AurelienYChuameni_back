@@ -191,9 +191,8 @@ class RatingViewSet(viewsets.ModelViewSet):
         existing = Rating.objects.filter(user=user, auction=auction).first()
 
         if existing:
-            # Update instead of duplicate
             existing.score = serializer.validated_data['score']
             existing.save()
-            self.kwargs['pk'] = existing.pk  # hack to allow redirect
+            self.kwargs['pk'] = existing.pk  # necesario para que DRF redirija
         else:
             serializer.save(user=user)
