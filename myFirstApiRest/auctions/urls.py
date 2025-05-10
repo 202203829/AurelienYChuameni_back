@@ -15,28 +15,27 @@ from .views import (
 
 app_name = "auctions"
 
-# 🔧 Router que incluye bids y ratings
 router = DefaultRouter()
-router.register(r"bids", BidViewSet, basename="bids")
-router.register(r"ratings", RatingViewSet, basename="ratings")
+router.register(r"bids", BidViewSet, basename="bids")              # /api/bids/
+router.register(r"ratings", RatingViewSet, basename="ratings")    # /api/ratings/
 
 urlpatterns = [
-    # 🔁 Categorías
+    # Categorías
     path("categories/", CategoryListCreate.as_view(), name="category-list-create"),
     path("categories/<int:pk>/", CategoryRetrieveUpdateDestroy.as_view(), name="category-detail"),
 
-    # 📦 Subastas
+    # Subastas
     path("", AuctionListCreate.as_view(), name="auction-list-create"),
     path("<int:pk>/", AuctionRetrieveUpdateDestroy.as_view(), name="auction-detail"),
 
-    # 👤 Subastas de usuarios
+    # Subastas del usuario autenticado
     path("users/", UserAuctionListView.as_view(), name="action-from-users"),
     path("users/misSubastas/", MyAuctionsView.as_view(), name="my-auctions"),
 
-    # 📨 Pujas (historial por subasta)
+    # Endpoints personalizados
     path("bids/auction/<int:auction_id>/", bids_by_auction, name="bids-by-auction"),
     path("mybids/", MyBidsView.as_view(), name="my-bids"),
 
-    # 📦 Endpoints automáticos /bids/ y /ratings/
+    # Incluir rutas del router (bids y ratings)
     path("", include(router.urls)),
 ]
