@@ -8,6 +8,7 @@ import {
   fetchAuction,
   createBid,
   fetchBidsByAuction,
+  createOrUpdateRating,
 } from "@/lib/api";
 import { getToken } from "@/lib/auth";
 import { format } from "date-fns";
@@ -123,24 +124,7 @@ export default function DetalleSubasta() {
     }
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auctions/ratings/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ score: ratingValue, auction: subasta.id }),
-        }
-      );
-
-      const text = await res.text();
-      if (!res.ok) {
-        console.error("❌ Error al valorar:", res.status, text);
-        throw new Error("Error al valorar");
-      }
-
+      await createOrUpdateRating({ score: ratingValue, auction: subasta.id });
       setRatingMessage("✅ Valoración enviada correctamente.");
     } catch (err) {
       console.error("Error al valorar:", err);
@@ -148,18 +132,21 @@ export default function DetalleSubasta() {
     }
   };
 
-  if (cargando)
+  if (cargando) {
     return (
       <Layout>
         <p className={styles.cargando}>Cargando subasta...</p>
       </Layout>
     );
-  if (error)
+  }
+
+  if (error) {
     return (
       <Layout>
         <p className={styles.error}>{error}</p>
       </Layout>
     );
+  }
 
   return (
     <Layout>
