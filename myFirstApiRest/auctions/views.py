@@ -71,7 +71,9 @@ class AuctionListCreate(generics.ListCreateAPIView):
         return queryset
 
     def perform_create(self, serializer):
+        print("🛠 DEBUG: validated_data =", serializer.validated_data)
         serializer.save(auctioneer=self.request.user)
+
 
 
 class AuctionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
