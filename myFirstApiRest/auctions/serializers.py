@@ -69,10 +69,15 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("La subasta debe durar al menos 15 días desde su creación.")
         return value
     def get_averageRating(self, obj):
-        ratings = obj.ratings.all()
-        if not ratings:
+        try:
+            ratings = obj.ratings.all()
+            if not ratings:
+                return None
+            return round(sum(r.score for r in ratings) / len(ratings), 2)
+        except Exception as e:
+            print("❌ Error en get_averageRating:", e)
             return None
-        return round(sum(r.score for r in ratings) / len(ratings), 2)
+
 
 
     class Meta:
