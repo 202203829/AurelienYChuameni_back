@@ -139,7 +139,13 @@ export default function DetalleSubasta() {
           <p>{subasta.description}</p>
           <p><strong>Valor actual:</strong> {parseFloat(subasta.price).toFixed(2)} €</p>
           {subasta.average_rating !== null && (
-            <p><strong>Valoración media:</strong> {subasta.average_rating.toFixed(2)} ⭐</p>
+            <p>
+            <strong>Valoración media:</strong>{" "}
+            {subasta.averageRating != null
+              ? `${subasta.averageRating.toFixed(2)} ⭐`
+              : "Sin valoraciones aún"}
+          </p>
+
           )}
 
           <label htmlFor="bidAmount">Tu puja:</label>
