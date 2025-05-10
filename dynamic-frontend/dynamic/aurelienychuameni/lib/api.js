@@ -238,17 +238,19 @@ export async function updateBid(id, data, token) {
 // =============== RATINGS ===================
 import { getToken } from "./auth"; // asegúrate de tener esta función bien definida
 
-export async function createOrUpdateRating(ratingData) {
-  const res = await fetch(`${BASE_URL}/auctions/ratings/`, {
+export async function createOrUpdateRating(ratingData, token) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auctions/ratings/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${getToken()}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(ratingData),
   });
 
   if (!res.ok) {
+    const errorText = await res.text();
+    console.error("❌ Error al valorar:", res.status, errorText);
     throw new Error("Error al enviar valoración");
   }
 

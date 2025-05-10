@@ -116,21 +116,22 @@ export default function DetalleSubasta() {
   };
 
   const handleRating = async () => {
-    const token = getToken();
-    if (!token) {
-      alert("Necesitas iniciar sesión para valorar.");
-      router.push("/login");
-      return;
-    }
+  const token = getToken();
+  if (!token) {
+    alert("Necesitas iniciar sesión para valorar.");
+    router.push("/login");
+    return;
+  }
 
-    try {
-      await createOrUpdateRating({ score: ratingValue, auction: subasta.id });
-      setRatingMessage("✅ Valoración enviada correctamente.");
-    } catch (err) {
-      console.error("Error al valorar:", err);
-      setRatingMessage("❌ Error al enviar valoración.");
-    }
-  };
+  try {
+    await createOrUpdateRating({ score: ratingValue, auction: subasta.id }, token);
+    setRatingMessage("✅ Valoración enviada correctamente.");
+  } catch (err) {
+    console.error("Error al valorar:", err);
+    setRatingMessage("❌ Error al enviar valoración.");
+  }
+};
+
 
   if (cargando) {
     return (
