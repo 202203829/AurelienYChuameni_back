@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import styles from "./detalle.module.css";
 import Layout from "../../componentes/Layout/Layout";
-import { fetchAuction, createBid, fetchBidsByAuction, createOrUpdateRating } from "@/lib/api";
+import {
+  fetchAuction,
+  createBid,
+  fetchBidsByAuction,
+} from "@/lib/api";
 import { getToken } from "@/lib/auth";
 import { format } from "date-fns";
 
@@ -119,7 +123,24 @@ export default function DetalleSubasta() {
     }
 
     try {
-      await createOrUpdateRating({ score: ratingValue, auction: subasta.id });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auctions/ratings/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ score: ratingValue, auction: subasta.id }),
+        }
+      );
+
+      const text = await res.text();
+      if (!res.ok) {
+        console.error("❌ Error al valorar:", res.status, text);
+        throw new Error("Error al valorar");
+      }
+
       setRatingMessage("✅ Valoración enviada correctamente.");
     } catch (err) {
       console.error("Error al valorar:", err);
@@ -127,91 +148,100 @@ export default function DetalleSubasta() {
     }
   };
 
-  if (cargando) return <Layout><p className={styles.cargando}>Cargando subasta...</p></Layout>;
-  if (error) return <Layout><p className={styles.error}>{error}</p></Layout>;
+  if (cargando)
+    return (
+      <Layout>
+        <p className={styles.cargando}>Cargando subasta...</p>
+      </Layout>
+    );
+  if (error)
+    return (
+      <Layout>
+        <p className={styles.error}>{error}</p>
+      </Layout>
+    );
 
   return (
-  <Layout>
-    <div className={styles.container}>
-      <div className={styles.productDetail}>
-        <h1>{subasta.title}</h1>
-        <img
-          src={subasta.thumbnail}
-          alt={subasta.title}
-          className={styles.productImage}
-        />
-        <p>{subasta.description}</p>
-        <p>
-          <strong>Valor actual:</strong>{" "}
-          {parseFloat(subasta.price).toFixed(2)} €
-        </p>
+    <Layout>
+      <div className={styles.container}>
+        <div className={styles.productDetail}>
+          <h1>{subasta.title}</h1>
+          <img
+            src={subasta.thumbnail}
+            alt={subasta.title}
+            className={styles.productImage}
+          />
+          <p>{subasta.description}</p>
+          <p>
+            <strong>Valor actual:</strong>{" "}
+            {parseFloat(subasta.price).toFixed(2)} €
+          </p>
 
-        <p>
-          <strong>Valoración media:</strong>{" "}
-          {subasta.averageRating != null
-            ? `${subasta.averageRating.toFixed(2)} ⭐`
-            : "Sin valoraciones aún"}
-        </p>
+          <p>
+            <strong>Valoración media:</strong>{" "}
+            {subasta.averageRating != null
+              ? `${subasta.averageRating.toFixed(2)} ⭐`
+              : "Sin valoraciones aún"}
+          </p>
 
-        <label htmlFor="bidAmount">Tu puja:</label>
-        <input
-          type="number"
-          id="bidAmount"
-          min={subasta.price + 1}
-          step="1"
-          value={puja}
-          onChange={(e) => setPuja(e.target.value)}
-          className={styles.inputNumber}
-        />
+          <label htmlFor="bidAmount">Tu puja:</label>
+          <input
+            type="number"
+            id="bidAmount"
+            min={subasta.price + 1}
+            step="1"
+            value={puja}
+            onChange={(e) => setPuja(e.target.value)}
+            className={styles.inputNumber}
+          />
 
-        <button onClick={handlePuja} className={styles.bidButton}>
-          Pujar
-        </button>
-        {mensajePuja && <p className={styles.bidMessage}>{mensajePuja}</p>}
+          <button onClick={handlePuja} className={styles.bidButton}>
+            Pujar
+          </button>
+          {mensajePuja && <p className={styles.bidMessage}>{mensajePuja}</p>}
 
-        <div className={styles.ratingSection}>
-          <label htmlFor="rating">Tu valoración:</label>
-          <select
-            id="rating"
-            value={ratingValue}
-            onChange={(e) => setRatingValue(parseInt(e.target.value))}
+          <div className={styles.ratingSection}>
+            <label htmlFor="rating">Tu valoración:</label>
+            <select
+              id="rating"
+              value={ratingValue}
+              onChange={(e) => setRatingValue(parseInt(e.target.value))}
+            >
+              {[1, 2, 3, 4, 5].map((v) => (
+                <option key={v} value={v}>
+                  {v} estrella{v > 1 && "s"}
+                </option>
+              ))}
+            </select>
+            <button onClick={handleRating}>Valorar</button>
+            {ratingMessage && <p>{ratingMessage}</p>}
+          </div>
+
+          <button
+            onClick={() => router.push("/subastas")}
+            className={styles.volverBtn}
           >
-            {[1, 2, 3, 4, 5].map((v) => (
-              <option key={v} value={v}>
-                {v} estrella{v > 1 && "s"}
-              </option>
-            ))}
-          </select>
-          <button onClick={handleRating}>Valorar</button>
-          {ratingMessage && <p>{ratingMessage}</p>}
+            ⬅ Volver a subastas
+          </button>
         </div>
 
-        <button
-          onClick={() => router.push("/subastas")}
-          className={styles.volverBtn}
-        >
-          ⬅ Volver a subastas
-        </button>
+        <div className={styles.bidList}>
+          <h3>📜 Historial de pujas</h3>
+          {bids.length === 0 ? (
+            <p>No hay pujas todavía.</p>
+          ) : (
+            <ul>
+              {bids.map((bid, index) => (
+                <li key={index}>
+                  💰 <strong>{Number(bid.amount).toFixed(2)}€</strong> - 👤{" "}
+                  {bid.bidder_username} - ⏱{" "}
+                  {format(new Date(bid.timestamp), "d/M/yyyy, HH:mm:ss")}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
-
-      <div className={styles.bidList}>
-        <h3>📜 Historial de pujas</h3>
-        {bids.length === 0 ? (
-          <p>No hay pujas todavía.</p>
-        ) : (
-          <ul>
-            {bids.map((bid, index) => (
-              <li key={index}>
-                💰 <strong>{Number(bid.amount).toFixed(2)}€</strong> - 👤{" "}
-                {bid.bidder_username} - ⏱{" "}
-                {format(new Date(bid.timestamp), "d/M/yyyy, HH:mm:ss")}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  </Layout>
-);
-
+    </Layout>
+  );
 }
