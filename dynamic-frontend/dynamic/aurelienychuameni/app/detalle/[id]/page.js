@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import styles from "./detalle.module.css";
 import Layout from "../../componentes/Layout/Layout";
 import {
@@ -14,10 +14,12 @@ import { getToken } from "@/lib/auth";
 import { format } from "date-fns";
 
 export default function DetalleSubasta() {
-  const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
 
-  const [id, setId] = useState(null);
+  // ✅ Extraemos el ID directamente desde la URL
+  const id = pathname?.split("/").pop();
+
   const [subasta, setSubasta] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -27,16 +29,8 @@ export default function DetalleSubasta() {
   const [ratingValue, setRatingValue] = useState(1);
   const [ratingMessage, setRatingMessage] = useState("");
 
-  // Extrae id cuando esté disponible
-  useEffect(() => {
-    if (params?.id) {
-      setId(params.id);
-    }
-  }, [params]);
-
   useEffect(() => {
     if (!id) return;
-
     console.log("🧩 ID extraído de la URL:", id);
 
     const loadAuction = async () => {
