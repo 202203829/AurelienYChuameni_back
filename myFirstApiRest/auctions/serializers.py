@@ -45,7 +45,12 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Auction
-        fields = '__all__'
+        fields = [
+            'id', 'title', 'description', 'price', 'stock', 'brand',
+            'thumbnail', 'creation_date', 'closing_date',
+            'auctioneer', 'category', 'category_data', 'isOpen'
+        ]
+
 
 
 
