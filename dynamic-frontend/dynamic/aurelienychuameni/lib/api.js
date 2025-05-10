@@ -1,4 +1,4 @@
-const BASE_URL = "https://aurelienychuameni-back.onrender.com";
+const BASE_URL = "https://aurelien-y-chuameni-back-79fr.vercel.app";
 
 // =============== AUTH =================
 export async function registerUser(data) {
