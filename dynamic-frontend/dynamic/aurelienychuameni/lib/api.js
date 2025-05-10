@@ -256,3 +256,4 @@ export async function createOrUpdateRating(auctionId, ratingData, token) {
 
   return res.json();
 }
+
