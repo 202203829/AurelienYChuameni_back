@@ -31,11 +31,6 @@ class Auction(models.Model):
     def __str__(self):
         return self.title
 
-    def delete(self, *args, **kwargs):
-        self.bids.all().delete()      # Borra pujas asociadas
-        self.ratings.all().delete()   # Borra valoraciones asociadas
-        super().delete(*args, **kwargs)
-
 
 class Bid(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -51,12 +46,12 @@ class Bid(models.Model):
 
 
 class Rating(models.Model):
-    score = models.PositiveSmallIntegerField()  # valor 1–5
+    score = models.PositiveSmallIntegerField()  # Valor de 1 a 5
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="ratings")
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="ratings")
 
     class Meta:
-        unique_together = ('user', 'auction')  # solo una valoración por user+auction
+        unique_together = ('user', 'auction')  # Solo una valoración por usuario y subasta
         ordering = ['-score']
 
     def __str__(self):
