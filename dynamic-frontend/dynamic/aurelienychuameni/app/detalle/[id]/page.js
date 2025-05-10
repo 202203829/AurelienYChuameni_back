@@ -126,11 +126,17 @@ export default function DetalleSubasta() {
   try {
     await createOrUpdateRating({ score: ratingValue, auction: subasta.id }, token);
     setRatingMessage("✅ Valoración enviada correctamente.");
+
+    // 🔄 Recarga subasta para que se actualice la media
+    const updated = await fetchAuction(id);
+    setSubasta(updated);
+
   } catch (err) {
     console.error("Error al valorar:", err);
     setRatingMessage("❌ Error al enviar valoración.");
   }
 };
+
 
 
   if (cargando) {
