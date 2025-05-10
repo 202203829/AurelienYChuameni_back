@@ -238,8 +238,8 @@ export async function updateBid(id, data, token) {
 // =============== RATINGS ===================
 import { getToken } from "./auth"; // asegúrate de tener esta función bien definida
 
-export async function createOrUpdateRating(ratingData, token) {
-  const res = await fetch(`https://aurelienychuameni-back.onrender.com/api/auctions/ratings/`, {
+export async function createOrUpdateRating(auctionId, ratingData, token) {
+  const res = await fetch(`${BASE_URL}/api/auctions/${auctionId}/ratings/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

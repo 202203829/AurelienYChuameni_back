@@ -117,47 +117,20 @@ export default function DetalleSubasta() {
 
 const handleRating = async () => {
   const token = getToken();
-
   if (!token) {
     alert("Necesitas iniciar sesión para valorar.");
     router.push("/login");
     return;
   }
 
-  if (!subasta) {
-    console.error("❌ subasta es null o undefined");
-    setRatingMessage("❌ La subasta no está cargada.");
-    return;
-  }
-
-  if (!subasta.id) {
-    console.error("❌ subasta.id es undefined:", subasta);
-    setRatingMessage("❌ La subasta no tiene ID.");
-    return;
-  }
-  if (!subasta || !subasta.id) {
-  console.error("❌ subasta o subasta.id no definido", subasta);
-  return;
-}
-
-
-  console.log("✅ subasta.id listo para valoración:", subasta.id);
-
   try {
-    await createOrUpdateRating(
-      { score: ratingValue, auction: subasta.id },
-      token
-    );
+    await createOrUpdateRating(subasta.id, { score: ratingValue }, token);
     setRatingMessage("✅ Valoración enviada correctamente.");
   } catch (err) {
-    console.error("❌ Error al valorar:", err);
+    console.error("Error al valorar:", err);
     setRatingMessage("❌ Error al enviar valoración.");
   }
 };
-
-
-
-
 
   if (cargando) {
     return (
