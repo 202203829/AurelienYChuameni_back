@@ -15,10 +15,10 @@ from .views import (
 
 app_name = "auctions"
 
+# en auctions/urls.py
 router = DefaultRouter()
-router.register(r"bids", BidViewSet, basename="bids")  # <- para GET/POST de pujas
-router.register(r"ratings", RatingViewSet, basename="ratings") 
-
+router.register(r"bids", BidViewSet, basename="bids")
+router.register(r"ratings", RatingViewSet, basename="ratings")
 
 urlpatterns = [
     path("categories/", CategoryListCreate.as_view(), name="category-list-create"),
@@ -26,8 +26,8 @@ urlpatterns = [
     path("", AuctionListCreate.as_view(), name="auction-list-create"),
     path("<int:pk>/", AuctionRetrieveUpdateDestroy.as_view(), name="auction-detail"),
     path("users/", UserAuctionListView.as_view(), name="action-from-users"),
-    path("", include(router.urls)),  # <- endpoints automáticos de /bids/
+    path("router/", include(router.urls)),  # ← usar un prefijo explícito si quieres
     path("bids/auction/<int:auction_id>/", bids_by_auction, name="bids-by-auction"),
-    path("mybids/", MyBidsView.as_view(), name="my-bids"),  
+    path("mybids/", MyBidsView.as_view(), name="my-bids"),
     path("users/misSubastas/", MyAuctionsView.as_view(), name="my-auctions"),
 ]

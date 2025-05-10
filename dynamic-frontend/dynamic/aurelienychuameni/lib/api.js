@@ -33,11 +33,12 @@ export async function fetchAuctions() {
   if (!res.ok) throw new Error("Error al obtener las subastas");
   return res.json();
 }
-
 export async function fetchAuction(id) {
   const res = await fetch(`${BASE_URL}/api/auctions/${id}/`);
+  if (!res.ok) throw new Error("Subasta no encontrada.");
   return res.json();
 }
+
 
 export async function createAuction(data, token) {
   const res = await fetch(`${BASE_URL}/api/auctions/`, {
@@ -124,6 +125,7 @@ export async function fetchBidsByAuction(auctionId) {
   }
   return res.json();
 }
+
 
 export async function fetchMyBids(token) {
   const res = await fetch(`${BASE_URL}/api/auctions/mybids/`, {
