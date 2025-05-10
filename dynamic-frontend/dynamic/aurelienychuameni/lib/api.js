@@ -1,4 +1,4 @@
-const BASE_URL = "https://aurelienychuameni-back.onrender.com/api";
+const BASE_URL = "https://aurelienychuameni-back.onrender.com/";
 
 fetch(`${BASE_URL}/api/auctions`)
 
