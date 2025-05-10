@@ -13,7 +13,6 @@ export default function NuevaSubasta() {
     title: "",
     description: "",
     price: 0,
-    rating: 5.0,
     stock: 1,
     brand: "",
     thumbnail: "",
