@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils import timezone
 from datetime import timedelta
-from .models import Category, Auction, Bid
+from .models import Category, Auction, Bid, Rating
 from drf_spectacular.utils import extend_schema_field
 
 
@@ -51,6 +51,7 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
 
 class AuctionDetailSerializer(serializers.ModelSerializer):
     isOpen = serializers.SerializerMethodField()
+    averageRating = serializers.SerializerMethodField()
     auctioneer = serializers.PrimaryKeyRelatedField(read_only=True)
     category = CategoryListCreateSerializer(read_only=True)  # ✅ también aquí
 
@@ -67,6 +68,11 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
             if value - creation_date < timedelta(days=15):
                 raise serializers.ValidationError("La subasta debe durar al menos 15 días desde su creación.")
         return value
+    def get_avg(self, obj):
+        ratings = obj.ratings.all()
+        if not ratings:
+            return None
+        return round(sum(r.score for r in ratings) / len(ratings), 2)
 
     class Meta:
         model = Auction
@@ -90,3 +96,13 @@ class BidSerializer(serializers.ModelSerializer):
             'auction_title', 'auction_thumbnail', 'auction_id'
         ]
         read_only_fields = ['bidder', 'timestamp', 'bidder_username']
+
+class RatingSerializer(serializers.ModelSerializer):
+    def validate_score(self, value):
+        if value<1 or value>5:
+            raise serializers.ValidationError("El rating debe estar entre 1 y 5.")
+        return value
+    class Meta:
+        model = Rating
+        fields = ['id', 'user', 'auction', 'rating']
+        read_only_fields = ['user']

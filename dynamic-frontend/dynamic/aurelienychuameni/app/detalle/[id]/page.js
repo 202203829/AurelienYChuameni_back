@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import styles from "./detalle.module.css";
 import Layout from "../../componentes/Layout/Layout";
-import { fetchAuction, createBid, fetchBidsByAuction } from "@/lib/api";
+import { fetchAuction, createBid, fetchBidsByAuction, createOrUpdateRating } from "@/lib/api";
 import { getToken } from "@/lib/auth";
 import { format } from "date-fns";
-
 
 export default function DetalleSubasta() {
   const { id } = useParams();
@@ -19,6 +18,9 @@ export default function DetalleSubasta() {
   const [puja, setPuja] = useState("");
   const [mensajePuja, setMensajePuja] = useState("");
   const [bids, setBids] = useState([]);
+
+  const [ratingValue, setRatingValue] = useState(1);
+  const [ratingMessage, setRatingMessage] = useState("");
 
   useEffect(() => {
     const loadAuction = async () => {
@@ -69,39 +71,34 @@ export default function DetalleSubasta() {
       setMensajePuja("❌ La puja debe ser mayor al valor actual.");
       return;
     }
-  
+
     const token = getToken();
     if (!token) {
       alert("Necesitas iniciar sesión para pujar.");
       router.push("/login");
       return;
     }
-  
+
     try {
       const bidData = { amount: pujaValor, auction: subasta.id };
       const result = await createBid(bidData, token);
-  
+
       if (result.amount) {
         setMensajePuja(`✅ Has pujado ${pujaValor}€ correctamente.`);
         setSubasta({ ...subasta, price: pujaValor });
         setPuja("");
-  
-        // Elimina las pujas anteriores del mismo usuario
+
         const nuevasPujas = bids.filter(
           (b) => b.bidder_username !== result.bidder_username
         );
-  
-        // Añade la nueva al principio
         nuevasPujas.unshift(result);
-  
-        // Reordena
         nuevasPujas.sort((a, b) => {
           if (b.amount === a.amount) {
             return new Date(a.timestamp) - new Date(b.timestamp);
           }
           return b.amount - a.amount;
         });
-  
+
         setBids(nuevasPujas);
       } else {
         console.error("Error en la puja:", result);
@@ -112,7 +109,23 @@ export default function DetalleSubasta() {
       setMensajePuja("❌ Error de conexión al pujar.");
     }
   };
-  
+
+  const handleRating = async () => {
+    const token = getToken();
+    if (!token) {
+      alert("Necesitas iniciar sesión para valorar.");
+      router.push("/login");
+      return;
+    }
+
+    try {
+      await createOrUpdateRating({ score: ratingValue, auction: subasta.id });
+      setRatingMessage("✅ Valoración enviada correctamente.");
+    } catch (err) {
+      console.error("Error al valorar:", err);
+      setRatingMessage("❌ Error al enviar valoración.");
+    }
+  };
 
   if (cargando) return <Layout><p className={styles.cargando}>Cargando subasta...</p></Layout>;
   if (error) return <Layout><p className={styles.error}>{error}</p></Layout>;
@@ -125,6 +138,9 @@ export default function DetalleSubasta() {
           <img src={subasta.thumbnail} alt={subasta.title} className={styles.productImage} />
           <p>{subasta.description}</p>
           <p><strong>Valor actual:</strong> {parseFloat(subasta.price).toFixed(2)} €</p>
+          {subasta.average_rating !== null && (
+            <p><strong>Valoración media:</strong> {subasta.average_rating.toFixed(2)} ⭐</p>
+          )}
 
           <label htmlFor="bidAmount">Tu puja:</label>
           <input
@@ -138,8 +154,18 @@ export default function DetalleSubasta() {
           />
 
           <button onClick={handlePuja} className={styles.bidButton}>Pujar</button>
-
           {mensajePuja && <p className={styles.bidMessage}>{mensajePuja}</p>}
+
+          <div className={styles.ratingSection}>
+            <label htmlFor="rating">Tu valoración:</label>
+            <select id="rating" value={ratingValue} onChange={(e) => setRatingValue(parseInt(e.target.value))}>
+              {[1, 2, 3, 4, 5].map((v) => (
+                <option key={v} value={v}>{v} estrella{v > 1 && "s"}</option>
+              ))}
+            </select>
+            <button onClick={handleRating}>Valorar</button>
+            {ratingMessage && <p>{ratingMessage}</p>}
+          </div>
 
           <button onClick={() => router.push("/subastas")} className={styles.volverBtn}>⬅ Volver a subastas</button>
         </div>
@@ -150,12 +176,11 @@ export default function DetalleSubasta() {
             <p>No hay pujas todavía.</p>
           ) : (
             <ul>
-            {bids.map((bid, index) => (
-              <li key={index}>
-                💰 <strong>{Number(bid.amount).toFixed(2)}€</strong> – 👤 {bid.bidder_username} – ⏱ {format(new Date(bid.timestamp), "d/M/yyyy, HH:mm:ss")}
-              </li>
-            ))}
-
+              {bids.map((bid, index) => (
+                <li key={index}>
+                  💰 <strong>{Number(bid.amount).toFixed(2)}€</strong> - 👤 {bid.bidder_username} - ⏱ {format(new Date(bid.timestamp), "d/M/yyyy, HH:mm:ss")}
+                </li>
+              ))}
             </ul>
           )}
         </div>

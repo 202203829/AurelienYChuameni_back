@@ -258,3 +258,20 @@ export async function updateBid(id, data, token) {
 
   return res.json();
 }
+
+export async function createOrUpdateRating(ratingData) {
+  const res = await fetch(`${BASE_URL}/auctions/ratings/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getToken()}`,
+    },
+    body: JSON.stringify(ratingData),
+  });
+
+  if (!res.ok) {
+    throw new Error("Error al enviar valoración");
+  }
+
+  return res.json();
+}

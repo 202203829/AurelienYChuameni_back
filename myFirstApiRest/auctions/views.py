@@ -5,15 +5,17 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from django.db.models import Q
 
-from .models import Category, Auction, Bid
+from .models import Category, Auction, Bid, Rating
 from .serializers import (
     CategoryListCreateSerializer,
     CategoryDetailSerializer,
     AuctionListCreateSerializer,
     AuctionDetailSerializer,
-    BidSerializer
+    BidSerializer, 
+    RatingSerializer,
 )
 from .permissions import IsOwnerOrAdmin, IsOwnerOrAdminBid
+
 
 
 # ===================== CATEGORÍAS =====================
@@ -170,3 +172,26 @@ class MyAuctionsView(APIView):
         user_auctions = Auction.objects.filter(auctioneer=request.user)
         serializer = AuctionListCreateSerializer(user_auctions, many=True)
         return Response(serializer.data)
+    
+from .models import Rating
+from .serializers import RatingSerializer
+
+class RatingViewSet(viewsets.ModelViewSet):
+    serializer_class = RatingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Rating.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        auction = serializer.validated_data['auction']
+        existing = Rating.objects.filter(user=user, auction=auction).first()
+
+        if existing:
+            # Update instead of duplicate
+            existing.score = serializer.validated_data['score']
+            existing.save()
+            self.kwargs['pk'] = existing.pk  # hack to allow redirect
+        else:
+            serializer.save(user=user)
