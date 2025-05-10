@@ -68,11 +68,12 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
             if value - creation_date < timedelta(days=15):
                 raise serializers.ValidationError("La subasta debe durar al menos 15 días desde su creación.")
         return value
-    def get_avg(self, obj):
+    def get_averageRating(self, obj):
         ratings = obj.ratings.all()
         if not ratings:
             return None
         return round(sum(r.score for r in ratings) / len(ratings), 2)
+
 
     class Meta:
         model = Auction
