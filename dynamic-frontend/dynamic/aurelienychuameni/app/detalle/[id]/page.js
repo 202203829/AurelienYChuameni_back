@@ -135,6 +135,11 @@ const handleRating = async () => {
     setRatingMessage("❌ La subasta no tiene ID.");
     return;
   }
+  if (!subasta || !subasta.id) {
+  console.error("❌ subasta o subasta.id no definido", subasta);
+  return;
+}
+
 
   console.log("✅ subasta.id listo para valoración:", subasta.id);
 
