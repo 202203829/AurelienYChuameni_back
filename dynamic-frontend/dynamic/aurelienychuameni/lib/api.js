@@ -1,10 +1,8 @@
-const BASE_URL = "https://aurelienychuameni-back.onrender.com/";
-
-fetch(`${BASE_URL}/api/auctions`)
+const BASE_URL = "https://aurelienychuameni-back.onrender.com";
 
 // =============== AUTH =================
 export async function registerUser(data) {
-  const res = await fetch(`${BASE_URL}/users/register/`, {
+  const res = await fetch(`${BASE_URL}/api/users/register/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -13,7 +11,7 @@ export async function registerUser(data) {
 }
 
 export async function loginUser(data) {
-  const res = await fetch(`${BASE_URL}/token/`, {
+  const res = await fetch(`${BASE_URL}/api/token/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -23,7 +21,7 @@ export async function loginUser(data) {
 
 // =============== PROFILE ================
 export async function getProfile(token) {
-  const res = await fetch(`${BASE_URL}/users/me/`, {
+  const res = await fetch(`${BASE_URL}/api/users/me/`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
@@ -31,23 +29,18 @@ export async function getProfile(token) {
 
 // =============== AUCTIONS ================
 export async function fetchAuctions() {
-  try {
-    const res = await fetch(`${BASE_URL}/auctions/`);
-    if (!res.ok) throw new Error("Error al obtener las subastas");
-    return res.json(); // <-- Esto debería devolver objetos con category.name
-  } catch (error) {
-    console.error("❌ fetchAuctions error:", error);
-    throw error;
-  }
+  const res = await fetch(`${BASE_URL}/api/auctions/`);
+  if (!res.ok) throw new Error("Error al obtener las subastas");
+  return res.json();
 }
 
 export async function fetchAuction(id) {
-  const res = await fetch(`${BASE_URL}/auctions/${id}/`);
+  const res = await fetch(`${BASE_URL}/api/auctions/${id}/`);
   return res.json();
 }
 
 export async function createAuction(data, token) {
-  const res = await fetch(`${BASE_URL}/auctions/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -73,11 +66,9 @@ export async function createAuction(data, token) {
 }
 
 export async function deleteAuction(id, token) {
-  const res = await fetch(`${BASE_URL}/auctions/${id}/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/${id}/`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (!res.ok) {
@@ -88,7 +79,7 @@ export async function deleteAuction(id, token) {
 }
 
 export async function updateAuction(id, data, token) {
-  const res = await fetch(`${BASE_URL}/auctions/${id}/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/${id}/`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -107,7 +98,7 @@ export async function updateAuction(id, data, token) {
 
 // =============== BIDS ===================
 export async function createBid(data, token) {
-  const res = await fetch(`${BASE_URL}/auctions/bids/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/bids/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -126,7 +117,7 @@ export async function createBid(data, token) {
 }
 
 export async function fetchBidsByAuction(auctionId) {
-  const res = await fetch(`${BASE_URL}/auctions/bids/auction/${auctionId}/`);
+  const res = await fetch(`${BASE_URL}/api/auctions/bids/auction/${auctionId}/`);
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Error al obtener pujas: ${text}`);
@@ -134,9 +125,8 @@ export async function fetchBidsByAuction(auctionId) {
   return res.json();
 }
 
-
 export async function fetchMyBids(token) {
-  const res = await fetch(`${BASE_URL}/auctions/mybids/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/mybids/`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -155,16 +145,16 @@ export async function fetchMyBids(token) {
 
 // =============== CATEGORIES ===================
 export async function fetchCategories() {
-  const res = await fetch(`${BASE_URL}/auctions/categories/`);
+  const res = await fetch(`${BASE_URL}/api/auctions/categories/`);
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Error al obtener categorías: ${text}`);
   }
-  return res.json(); // [{id, name}]
+  return res.json();
 }
 
 export async function createCategory(name, token) {
-  const res = await fetch(`${BASE_URL}/auctions/categories/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/categories/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -184,7 +174,7 @@ export async function createCategory(name, token) {
 
 // =============== PERSONAL ===================
 export async function fetchMyAuctions(token) {
-  const res = await fetch(`${BASE_URL}/auctions/users/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/users/`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -193,43 +183,26 @@ export async function fetchMyAuctions(token) {
 }
 
 export async function fetchUserProfile(token) {
-  try {
-    const res = await fetch(`${BASE_URL}/users/me/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const res = await fetch(`${BASE_URL}/api/users/me/`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-    const contentType = res.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      throw new Error("❌ El servidor no devolvió JSON");
-    }
-
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.error("❌ Error de perfil:", errorData);
-      throw new Error("Error al obtener perfil");
-    }
-
-    return res.json();
-  } catch (error) {
-    console.error("❌ Error general al obtener perfil:", error);
-    throw error;
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    throw new Error("❌ El servidor no devolvió JSON");
   }
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    console.error("❌ Error de perfil:", errorData);
+    throw new Error("Error al obtener perfil");
+  }
+
+  return res.json();
 }
-const eliminarPuja = async (bidId) => {
-  const token = localStorage.getItem("token");
-  if (!token) return;
 
-  try {
-    await deleteBid(bidId, token); // 🔁 necesitas esta función en la API
-    setPujas((prev) => prev.filter((b) => b.id !== bidId));
-  } catch (error) {
-    console.error("❌ Error al eliminar puja:", error);
-  }
-};
 export async function deleteBid(id, token) {
-  const res = await fetch(`${BASE_URL}/auctions/bids/${id}/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/bids/${id}/`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -237,12 +210,13 @@ export async function deleteBid(id, token) {
   });
 
   if (res.status !== 204) {
-    const text = await res.text();  // Captura error HTML si lo hay
+    const text = await res.text();
     throw new Error(`Error al eliminar puja: ${text}`);
   }
 }
+
 export async function updateBid(id, data, token) {
-  const res = await fetch(`${BASE_URL}/auctions/bids/${id}/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/bids/${id}/`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -259,8 +233,11 @@ export async function updateBid(id, data, token) {
   return res.json();
 }
 
+// =============== RATINGS ===================
+import { getToken } from "./auth"; // asegúrate de tener esta función bien definida
+
 export async function createOrUpdateRating(ratingData) {
-  const res = await fetch(`${BASE_URL}/auctions/ratings/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/ratings/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
