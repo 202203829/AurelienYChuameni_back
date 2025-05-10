@@ -14,20 +14,31 @@ import { getToken } from "@/lib/auth";
 import { format } from "date-fns";
 
 export default function DetalleSubasta() {
-  const { id } = useParams();
+  const params = useParams();
   const router = useRouter();
 
+  const [id, setId] = useState(null);
   const [subasta, setSubasta] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [puja, setPuja] = useState("");
   const [mensajePuja, setMensajePuja] = useState("");
   const [bids, setBids] = useState([]);
-
   const [ratingValue, setRatingValue] = useState(1);
   const [ratingMessage, setRatingMessage] = useState("");
 
+  // Extrae id cuando esté disponible
   useEffect(() => {
+    if (params?.id) {
+      setId(params.id);
+    }
+  }, [params]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    console.log("🧩 ID extraído de la URL:", id);
+
     const loadAuction = async () => {
       try {
         const data = await fetchAuction(id);
@@ -60,10 +71,8 @@ export default function DetalleSubasta() {
       }
     };
 
-    if (id) {
-      loadAuction();
-      loadBids();
-    }
+    loadAuction();
+    loadBids();
   }, [id]);
 
   const handlePuja = async () => {
@@ -124,6 +133,7 @@ export default function DetalleSubasta() {
     }
 
     try {
+      console.log("➡️ Enviando valoración para auction ID:", id);
       await createOrUpdateRating(id, { score: ratingValue }, token);
       setRatingMessage("✅ Valoración enviada correctamente.");
     } catch (err) {
