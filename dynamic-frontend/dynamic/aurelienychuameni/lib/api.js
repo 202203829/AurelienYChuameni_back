@@ -239,7 +239,7 @@ export async function updateBid(id, data, token) {
 import { getToken } from "./auth"; // asegúrate de tener esta función bien definida
 
 export async function createOrUpdateRating(ratingData, token) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auctions/ratings/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/ratings/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
