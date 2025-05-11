@@ -126,3 +126,11 @@
   font-size: 0.95rem;
   color: #222;
 }
+
+/* Estilo para la valoración promedio */
+.rating {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ff9800;
+  margin-top: 10px;
+}

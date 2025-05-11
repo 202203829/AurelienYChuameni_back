@@ -8,7 +8,6 @@ import { fetchAuction, createBid, fetchBidsByAuction } from "@/lib/api";
 import { getToken } from "@/lib/auth";
 import { format } from "date-fns";
 
-
 export default function DetalleSubasta() {
   const { id } = useParams();
   const router = useRouter();
@@ -19,6 +18,7 @@ export default function DetalleSubasta() {
   const [puja, setPuja] = useState("");
   const [mensajePuja, setMensajePuja] = useState("");
   const [bids, setBids] = useState([]);
+  const [averageRating, setAverageRating] = useState(null);
 
   useEffect(() => {
     const loadAuction = async () => {
@@ -26,6 +26,7 @@ export default function DetalleSubasta() {
         const data = await fetchAuction(id);
         if (data && data.id) {
           setSubasta(data);
+          setAverageRating(data.average_rating); // Asignar la valoración promedio
         } else {
           throw new Error("Subasta no encontrada.");
         }
@@ -69,31 +70,31 @@ export default function DetalleSubasta() {
       setMensajePuja("❌ La puja debe ser mayor al valor actual.");
       return;
     }
-  
+
     const token = getToken();
     if (!token) {
       alert("Necesitas iniciar sesión para pujar.");
       router.push("/login");
       return;
     }
-  
+
     try {
       const bidData = { amount: pujaValor, auction: subasta.id };
       const result = await createBid(bidData, token);
-  
+
       if (result.amount) {
         setMensajePuja(`✅ Has pujado ${pujaValor}€ correctamente.`);
         setSubasta({ ...subasta, price: pujaValor });
         setPuja("");
-  
+
         // Elimina las pujas anteriores del mismo usuario
         const nuevasPujas = bids.filter(
           (b) => b.bidder_username !== result.bidder_username
         );
-  
+
         // Añade la nueva al principio
         nuevasPujas.unshift(result);
-  
+
         // Reordena
         nuevasPujas.sort((a, b) => {
           if (b.amount === a.amount) {
@@ -101,7 +102,7 @@ export default function DetalleSubasta() {
           }
           return b.amount - a.amount;
         });
-  
+
         setBids(nuevasPujas);
       } else {
         console.error("Error en la puja:", result);
@@ -112,7 +113,6 @@ export default function DetalleSubasta() {
       setMensajePuja("❌ Error de conexión al pujar.");
     }
   };
-  
 
   if (cargando) return <Layout><p className={styles.cargando}>Cargando subasta...</p></Layout>;
   if (error) return <Layout><p className={styles.error}>{error}</p></Layout>;
@@ -125,6 +125,7 @@ export default function DetalleSubasta() {
           <img src={subasta.thumbnail} alt={subasta.title} className={styles.productImage} />
           <p>{subasta.description}</p>
           <p><strong>Valor actual:</strong> {parseFloat(subasta.price).toFixed(2)} €</p>
+          <p><strong>Valoración promedio:</strong> {averageRating || "Sin valoraciones"}</p>
 
           <label htmlFor="bidAmount">Tu puja:</label>
           <input

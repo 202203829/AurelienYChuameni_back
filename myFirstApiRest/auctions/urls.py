@@ -10,12 +10,14 @@ from .views import (
     BidViewSet,
     MyBidsView,
     bids_by_auction,
+    RatingViewSet,
 )
 
 app_name = "auctions"
 
 router = DefaultRouter()
 router.register(r"bids", BidViewSet, basename="bids")  # <- para GET/POST de pujas
+router.register(r"ratings", RatingViewSet, basename="ratings")  # Endpoints automáticos para valoraciones
 
 urlpatterns = [
     path("categories/", CategoryListCreate.as_view(), name="category-list-create"),

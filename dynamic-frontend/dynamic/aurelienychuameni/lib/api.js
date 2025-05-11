@@ -1,6 +1,6 @@
 const BASE_URL = "https://aurelienychuameni-back.onrender.com/api";
 
-fetch(`${BASE_URL}/api/auctions`)
+fetch(`${BASE_URL}/api/auctions`);
 
 // =============== AUTH =================
 export async function registerUser(data) {
@@ -134,7 +134,6 @@ export async function fetchBidsByAuction(auctionId) {
   return res.json();
 }
 
-
 export async function fetchMyBids(token) {
   const res = await fetch(`${BASE_URL}/auctions/mybids/`, {
     headers: {
@@ -257,4 +256,32 @@ export async function updateBid(id, data, token) {
   }
 
   return res.json();
+}
+
+// =============== RATINGS ===================
+export async function fetchRatings(auctionId) {
+  const res = await fetch(`${BASE_URL}/ratings/?auction=${auctionId}`);
+  return res.json();
+}
+
+export async function createOrUpdateRating(auctionId, value, token) {
+  const res = await fetch(`${BASE_URL}/ratings/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ auction: auctionId, value }),
+  });
+  return res.json();
+}
+
+export async function deleteRating(ratingId, token) {
+  const res = await fetch(`${BASE_URL}/ratings/${ratingId}/`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.ok;
 }

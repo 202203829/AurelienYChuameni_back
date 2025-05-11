@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils import timezone
 from datetime import timedelta
-from .models import Category, Auction, Bid
+from .models import Category, Auction, Bid, Rating
 from drf_spectacular.utils import extend_schema_field
 
 
@@ -24,10 +24,15 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
     auctioneer = serializers.PrimaryKeyRelatedField(read_only=True)
     category = serializers.CharField(write_only=True)
     category_data = CategoryListCreateSerializer(source='category', read_only=True)
+    average_rating = serializers.SerializerMethodField()
 
     @extend_schema_field(serializers.BooleanField())
     def get_isOpen(self, obj):
         return obj.closing_date > timezone.now()
+
+    @extend_schema_field(serializers.FloatField())
+    def get_average_rating(self, obj):
+        return obj.calculate_average_rating()
 
     def validate_closing_date(self, value):
         now = timezone.now()
@@ -90,3 +95,10 @@ class BidSerializer(serializers.ModelSerializer):
             'auction_title', 'auction_thumbnail', 'auction_id'
         ]
         read_only_fields = ['bidder', 'timestamp', 'bidder_username']
+
+
+# -------- RATINGS --------
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = ['id', 'value', 'user', 'auction']

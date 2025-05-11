@@ -5,13 +5,14 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from django.db.models import Q
 
-from .models import Category, Auction, Bid
+from .models import Category, Auction, Bid, Rating
 from .serializers import (
     CategoryListCreateSerializer,
     CategoryDetailSerializer,
     AuctionListCreateSerializer,
     AuctionDetailSerializer,
-    BidSerializer
+    BidSerializer,
+    RatingSerializer
 )
 from .permissions import IsOwnerOrAdmin, IsOwnerOrAdminBid
 
@@ -78,6 +79,16 @@ class AuctionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AuctionDetailSerializer
 
 
+class AuctionDetailView(generics.RetrieveAPIView):
+    queryset = Auction.objects.all()
+    serializer_class = AuctionDetailSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['average_rating'] = self.get_object().calculate_average_rating()
+        return context
+
+
 class UserAuctionListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -85,7 +96,6 @@ class UserAuctionListView(APIView):
         user_auctions = Auction.objects.filter(auctioneer=request.user)
         serializer = AuctionListCreateSerializer(user_auctions, many=True)
         return Response(serializer.data)
-
 
 
 # ===================== PUJAS =====================
@@ -137,11 +147,11 @@ class BidViewSet(viewsets.ModelViewSet):
         if amount > auction.price:
             auction.price = amount
             auction.save()
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 
 from rest_framework.decorators import api_view
@@ -151,6 +161,7 @@ def bids_by_auction(request, auction_id):
     bids = Bid.objects.filter(auction_id=auction_id).order_by('-timestamp')[:5]
     serializer = BidSerializer(bids, many=True)
     return Response(serializer.data)
+
 
 # ===================== MIS PUJAS =====================
 
@@ -170,3 +181,24 @@ class MyAuctionsView(APIView):
         user_auctions = Auction.objects.filter(auctioneer=request.user)
         serializer = AuctionListCreateSerializer(user_auctions, many=True)
         return Response(serializer.data)
+
+
+# ===================== VALORACIONES =====================
+
+class RatingViewSet(viewsets.ModelViewSet):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        auction = serializer.validated_data['auction']
+        user = self.request.user
+        if Rating.objects.filter(auction=auction, user=user).exists():
+            raise ValidationError("Ya has valorado esta subasta.")
+        serializer.save(user=user)
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        instance.delete()
