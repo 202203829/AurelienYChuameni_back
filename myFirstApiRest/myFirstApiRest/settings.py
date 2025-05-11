@@ -25,7 +25,12 @@ SECRET_KEY = 'django-insecure-qexvtt*4runs+&ayp#pwrsl$l^^g64^b268e+gk7s_a(-09=gv
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
 # Añade aquí tu dominio de Render
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "aurelienychuameni-back.onrender.com", "https://aurelien-y-chuameni-back-79fr.vercel.app"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "aurelienychuameni-back.onrender.com",  # backend en Render
+    "aurelien-y-chuameni-front.vercel.app",  # frontend (si quieres permitirlo aquí también)
+]
 
 
 # Usuario personalizado
@@ -114,7 +119,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://aurelien-y-chuameni-back-79fr.vercel.app",  # si usas Vercel, añádelo aquí
+    "https://aurelien-y-chuameni-front.vercel.app",  # este sí debe estar
 ]
 APPEND_SLASH = False
 
