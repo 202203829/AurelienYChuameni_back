@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import styles from "./detalle.module.css";
 import Layout from "../../componentes/Layout/Layout";
-import { fetchAuction, createBid, fetchBidsByAuction } from "@/lib/api";
+import { fetchAuction, createBid, fetchBidsByAuction, createOrUpdateRating } from "@/lib/api";
 import { getToken } from "@/lib/auth";
 import { format } from "date-fns";
 
@@ -19,6 +19,8 @@ export default function DetalleSubasta() {
   const [mensajePuja, setMensajePuja] = useState("");
   const [bids, setBids] = useState([]);
   const [averageRating, setAverageRating] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [ratingMessage, setRatingMessage] = useState("");
 
   useEffect(() => {
     const loadAuction = async () => {
@@ -114,6 +116,23 @@ export default function DetalleSubasta() {
     }
   };
 
+  const handleRatingSubmit = async (e) => {
+    e.preventDefault();
+    const token = getToken();
+    if (!token) {
+      setRatingMessage("Debes iniciar sesión para valorar.");
+      return;
+    }
+
+    try {
+      await createOrUpdateRating(id, rating, token);
+      setRatingMessage("Valoración enviada con éxito.");
+    } catch (error) {
+      console.error("Error al valorar:", error);
+      setRatingMessage("Error al enviar la valoración.");
+    }
+  };
+
   if (cargando) return <Layout><p className={styles.cargando}>Cargando subasta...</p></Layout>;
   if (error) return <Layout><p className={styles.error}>{error}</p></Layout>;
 
@@ -159,6 +178,24 @@ export default function DetalleSubasta() {
 
             </ul>
           )}
+        </div>
+
+        <div className={styles.ratingForm}>
+          <form onSubmit={handleRatingSubmit}>
+            <label htmlFor="rating">Valorar subasta:</label>
+            <select
+              id="rating"
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+            >
+              <option value="0">Selecciona una valoración</option>
+              {[1, 2, 3, 4, 5].map((value) => (
+                <option key={value} value={value}>{value}</option>
+              ))}
+            </select>
+            <button type="submit">Enviar valoración</button>
+          </form>
+          {ratingMessage && <p>{ratingMessage}</p>}
         </div>
       </div>
     </Layout>
