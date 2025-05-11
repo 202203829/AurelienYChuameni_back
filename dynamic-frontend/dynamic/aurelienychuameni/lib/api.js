@@ -1,5 +1,4 @@
-const BASE_URL = "http://localhost:8000/api";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const BASE_URL = "https://aurelienychuameni-back.onrender.com/api";
 
 // =============== AUTH =================
 export async function registerUser(data) {

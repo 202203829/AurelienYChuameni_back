@@ -18,7 +18,7 @@ export default function Inicio() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/token/",
+        "https://aurelienychuameni-back.onrender.com/api/token/",
         {
           username,
           password,
@@ -29,7 +29,7 @@ export default function Inicio() {
       localStorage.setItem("token", accessToken);
 
       const profileRes = await fetch(
-        "http://localhost:8000/api/users/me/",
+        "https://aurelienychuameni-back.onrender.com/api/users/me/",
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
