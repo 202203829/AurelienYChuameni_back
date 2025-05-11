@@ -10,7 +10,7 @@ const SubastasClient = () => {
   const [subastas, setSubastas] = useState([]);
   const [subastasFiltradas, setSubastasFiltradas] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [precioMax, setPrecioMax] = useState(100000);
+  const [precioMax, setPrecioMax] = useState(10000000);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
   const [estadoSeleccionado, setEstadoSeleccionado] = useState("Todas");
   const [ratingMin, setRatingMin] = useState(0);
@@ -97,7 +97,7 @@ const SubastasClient = () => {
           <input
             type="range"
             min="0"
-            max="100000"
+            max="10000000"
             value={precioMax}
             onChange={(e) => setPrecioMax(Number(e.target.value))}
           />
