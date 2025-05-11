@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-qexvtt*4runs+&ayp#pwrsl$l^^g64^b268e+gk7s_a(-09=gv
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
 # Añade aquí tu dominio de Render
-ALLOWED_HOSTS = ["127.0.0.1", "aurelienychuameni-back.onrender.com", "https://aurelien-y-chuameni-back-79fr.vercel.app"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "aurelienychuameni-back.onrender.com", "https://aurelien-y-chuameni-back-79fr.vercel.app"]
 
 
 # Usuario personalizado

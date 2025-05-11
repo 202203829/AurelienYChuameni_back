@@ -194,12 +194,73 @@ class RatingViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         auction = serializer.validated_data['auction']
         user = self.request.user
-        if Rating.objects.filter(auction=auction, user=user).exists():
-            raise ValidationError("Ya has valorado esta subasta.")
-        serializer.save(user=user)
+
+        existing = Rating.objects.filter(auction=auction, user=user).first()
+        if existing:
+            serializer.instance = existing  # reutiliza el objeto existente
+            serializer.save(user=user)      # modifica su valor
+        else:
+            serializer.save(user=user)
+
 
     def perform_update(self, serializer):
         serializer.save()
 
     def perform_destroy(self, instance):
         instance.delete()
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from django.db.models import Avg
+from rest_framework.response import Response
+
+@api_view(["GET"])
+@permission_classes([AllowAny])  # 👈 ESTO ES FUNDAMENTAL
+def average_rating_global(request):
+    avg = Rating.objects.aggregate(Avg("value"))["value__avg"]
+    return Response({"average_rating": round(avg, 2) if avg else None})
+from rest_framework import viewsets
+from .models import Comment
+from .serializers import CommentSerializer
+from .permissions import IsOwnerOrReadOnly
+
+from .permissions import IsOwnerOrReadOnly
+
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsOwnerOrReadOnly
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all().order_by("-created_at")
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from auctions.models import Rating
+from auctions.serializers import RatingSerializer
+from django.db.models import Prefetch
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_ratings(request):
+    ratings = Rating.objects.filter(user=request.user).select_related('auction', 'auction__category')
+    data = []
+    for r in ratings:
+        data.append({
+            "id": r.id,
+            "value": r.value,
+            "auction": {
+                "id": r.auction.id,
+                "title": r.auction.title,
+                "price": r.auction.price,
+                "closing_date": r.auction.closing_date,
+                "category": {
+                    "id": r.auction.category.id if r.auction.category else None,
+                    "name": r.auction.category.name if r.auction.category else "Sin categoría"
+                }
+            }
+        })
+    return Response(data)

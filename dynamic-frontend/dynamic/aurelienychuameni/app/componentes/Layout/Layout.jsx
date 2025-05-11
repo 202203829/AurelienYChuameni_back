@@ -80,6 +80,7 @@ const Layout = ({ children, showSearch = true }) => {
                       <div className={styles.dropdownContent}>
                         <button onClick={() => goTo("/usuario")}>👤 Mi perfil</button>
                         <button onClick={() => goTo("/misSubastas")}>📦 Mis subastas</button>
+                        <button onClick={() => goTo("/misValoraciones")}>🌟 Mis valoraciones</button>
                         <button onClick={() => goTo("/misPujas")}>💰 Mis pujas</button>
                       </div>
                     )}

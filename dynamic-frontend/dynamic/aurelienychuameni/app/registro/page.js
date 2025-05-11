@@ -133,7 +133,7 @@ function Registro() {
 
       if (response.access) {
         saveToken(response.access);
-        router.push("/index");
+        router.push("/");
       } else if (response.email || response.username) {
         setPasswordMatchError("El usuario o email ya existen. Prueba a iniciar sesión.");
       } else {

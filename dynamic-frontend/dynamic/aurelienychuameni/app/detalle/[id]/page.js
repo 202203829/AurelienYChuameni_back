@@ -4,8 +4,18 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import styles from "./detalle.module.css";
 import Layout from "../../componentes/Layout/Layout";
-import { fetchAuction, createBid, fetchBidsByAuction, createOrUpdateRating } from "@/lib/api";
-import { getToken } from "@/lib/auth";
+import {
+  fetchAuction,
+  createBid,
+  fetchBidsByAuction,
+  createOrUpdateRating,
+  fetchGlobalAverageRating,
+  fetchComments,
+  createComment,
+  deleteComment,
+  updateComment,
+} from "@/lib/api";
+import { getToken, getUserId } from "@/lib/auth";
 import { format } from "date-fns";
 
 export default function DetalleSubasta() {
@@ -21,64 +31,57 @@ export default function DetalleSubasta() {
   const [averageRating, setAverageRating] = useState(null);
   const [rating, setRating] = useState(0);
   const [ratingMessage, setRatingMessage] = useState("");
+  const [globalAverage, setGlobalAverage] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [commentTitle, setCommentTitle] = useState("");
+  const [commentContent, setCommentContent] = useState("");
+  const [editCommentId, setEditCommentId] = useState(null);
+  const [editCommentTitle, setEditCommentTitle] = useState("");
+  const [editCommentContent, setEditCommentContent] = useState("");
+
+  const userId = getUserId();
 
   useEffect(() => {
-    const loadAuction = async () => {
+    const loadAll = async () => {
       try {
         const data = await fetchAuction(id);
-        if (data && data.id) {
-          setSubasta(data);
-          setAverageRating(data.average_rating); // Asignar la valoración promedio
-        } else {
-          throw new Error("Subasta no encontrada.");
+        if (!data?.id) throw new Error("Subasta no encontrada.");
+        setSubasta(data);
+        setAverageRating(data.average_rating);
+
+        const token = getToken();
+        if (token) {
+          const allBids = await fetchBidsByAuction(id, token);
+          setBids(allBids.sort((a, b) =>
+            b.amount === a.amount
+              ? new Date(a.timestamp) - new Date(b.timestamp)
+              : b.amount - a.amount
+          ));
+
+          const commentData = await fetchComments(id, token);
+          setComments(commentData);
         }
+
+        const avg = await fetchGlobalAverageRating();
+        setGlobalAverage(avg);
       } catch (err) {
-        console.error("Error al obtener subasta:", err);
+        console.error(err);
         setError("No se pudo cargar la subasta.");
       } finally {
         setCargando(false);
       }
     };
 
-    const loadBids = async () => {
-      try {
-        const token = getToken();
-        if (!token) return;
-        const allBids = await fetchBidsByAuction(id, token);
-        const sorted = allBids.sort((a, b) => {
-          if (b.amount === a.amount)
-            return new Date(a.timestamp) - new Date(b.timestamp);
-          return b.amount - a.amount;
-        });
-        setBids(sorted);
-      } catch (error) {
-        console.error("Error al obtener pujas:", error);
-      }
-    };
-
-    if (id) {
-      loadAuction();
-      loadBids();
-    }
+    if (id) loadAll();
   }, [id]);
 
   const handlePuja = async () => {
     const pujaValor = parseFloat(puja);
-    if (isNaN(pujaValor)) {
-      setMensajePuja("⚠️ Introduce un número válido.");
-      return;
-    }
-    if (pujaValor <= subasta.price) {
-      setMensajePuja("❌ La puja debe ser mayor al valor actual.");
-      return;
-    }
+    if (isNaN(pujaValor)) return setMensajePuja("⚠️ Introduce un número válido.");
+    if (pujaValor <= subasta.price) return setMensajePuja("❌ La puja debe ser mayor al valor actual.");
 
     const token = getToken();
-    if (!token) {
-      alert("Necesitas iniciar sesión para pujar.");
-      router.push("/login");
-      return;
-    }
+    if (!token) return router.push("/login");
 
     try {
       const bidData = { amount: pujaValor, auction: subasta.id };
@@ -88,30 +91,13 @@ export default function DetalleSubasta() {
         setMensajePuja(`✅ Has pujado ${pujaValor}€ correctamente.`);
         setSubasta({ ...subasta, price: pujaValor });
         setPuja("");
-
-        // Elimina las pujas anteriores del mismo usuario
-        const nuevasPujas = bids.filter(
-          (b) => b.bidder_username !== result.bidder_username
-        );
-
-        // Añade la nueva al principio
+        const nuevasPujas = bids.filter(b => b.bidder_username !== result.bidder_username);
         nuevasPujas.unshift(result);
-
-        // Reordena
-        nuevasPujas.sort((a, b) => {
-          if (b.amount === a.amount) {
-            return new Date(a.timestamp) - new Date(b.timestamp);
-          }
-          return b.amount - a.amount;
-        });
-
         setBids(nuevasPujas);
       } else {
-        console.error("Error en la puja:", result);
         setMensajePuja("❌ Error al enviar la puja.");
       }
-    } catch (err) {
-      console.error("Error al pujar:", err);
+    } catch {
       setMensajePuja("❌ Error de conexión al pujar.");
     }
   };
@@ -119,17 +105,62 @@ export default function DetalleSubasta() {
   const handleRatingSubmit = async (e) => {
     e.preventDefault();
     const token = getToken();
-    if (!token) {
-      setRatingMessage("Debes iniciar sesión para valorar.");
-      return;
-    }
+    if (!token) return setRatingMessage("Debes iniciar sesión para valorar.");
 
     try {
       await createOrUpdateRating(subasta.id, rating, token);
       setRatingMessage("Valoración enviada con éxito.");
-    } catch (error) {
-      console.error("Error al valorar:", error);
+    } catch {
       setRatingMessage("Error al enviar la valoración.");
+    }
+  };
+
+  const handleCreateComment = async () => {
+    const token = getToken();
+    if (!token) return;
+
+    try {
+      await createComment({ auction: id, title: commentTitle, content: commentContent }, token);
+      setCommentTitle("");
+      setCommentContent("");
+      const updated = await fetchComments(id, token);
+      setComments(updated);
+    } catch (err) {
+      console.error("Error al crear comentario:", err);
+    }
+  };
+
+  const handleEditComment = async () => {
+    const token = getToken();
+    if (!token || !editCommentId) return;
+
+    try {
+      await updateComment(editCommentId, {
+        auction: id,
+        title: editCommentTitle,
+        content: editCommentContent,
+      }, token);
+
+      setEditCommentId(null);
+      setEditCommentTitle("");
+      setEditCommentContent("");
+      const updated = await fetchComments(id, token);
+      setComments(updated);
+    } catch (err) {
+      console.error("Error al editar comentario:", err);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    const token = getToken();
+    if (!token) return;
+
+    try {
+      await deleteComment(commentId, token);
+      const updated = await fetchComments(id, token);
+      setComments(updated);
+    } catch (err) {
+      console.error("Error al eliminar comentario:", err);
     }
   };
 
@@ -138,64 +169,134 @@ export default function DetalleSubasta() {
 
   return (
     <Layout>
-      <div className={styles.container}>
-        <div className={styles.productDetail}>
+      <div className={styles.mainWrapper}>
+        <div className={styles.contentPanel}>
           <h1>{subasta.title}</h1>
           <img src={subasta.thumbnail} alt={subasta.title} className={styles.productImage} />
           <p>{subasta.description}</p>
           <p><strong>Valor actual:</strong> {parseFloat(subasta.price).toFixed(2)} €</p>
           <p><strong>Valoración promedio:</strong> {averageRating || "Sin valoraciones"}</p>
 
-          <label htmlFor="bidAmount">Tu puja:</label>
+          <label>Tu puja:</label>
           <input
             type="number"
-            id="bidAmount"
             min={subasta.price + 1}
             step="1"
             value={puja}
             onChange={(e) => setPuja(e.target.value)}
             className={styles.inputNumber}
           />
-
           <button onClick={handlePuja} className={styles.bidButton}>Pujar</button>
-
           {mensajePuja && <p className={styles.bidMessage}>{mensajePuja}</p>}
 
-          <button onClick={() => router.push("/subastas")} className={styles.volverBtn}>⬅ Volver a subastas</button>
-        </div>
+          <button onClick={() => router.push("/subastas")} className={styles.volverBtn}>
+            ⬅ Volver a subastas
+          </button>
 
-        <div className={styles.bidList}>
-          <h3>📜 Historial de pujas</h3>
-          {bids.length === 0 ? (
-            <p>No hay pujas todavía.</p>
-          ) : (
-            <ul>
-            {bids.map((bid, index) => (
-              <li key={index}>
-                💰 <strong>{Number(bid.amount).toFixed(2)}€</strong> – 👤 {bid.bidder_username} – ⏱ {format(new Date(bid.timestamp), "d/M/yyyy, HH:mm:ss")}
-              </li>
-            ))}
-
-            </ul>
-          )}
-        </div>
-
-        <div className={styles.ratingForm}>
-          <form onSubmit={handleRatingSubmit}>
-            <label htmlFor="rating">Valorar subasta:</label>
-            <select
-              id="rating"
-              value={rating}
-              onChange={(e) => setRating(Number(e.target.value))}
-            >
+          <form onSubmit={handleRatingSubmit} className={styles.ratingForm}>
+            <label>Valorar subasta:</label>
+            <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
               <option value="0">Selecciona una valoración</option>
-              {[1, 2, 3, 4, 5].map((value) => (
-                <option key={value} value={value}>{value}</option>
+              {[1, 2, 3, 4, 5].map(val => (
+                <option key={val} value={val}>{val}</option>
               ))}
             </select>
-            <button type="submit">Enviar valoración</button>
+            <button type="submit" className={styles.rateButton}>Enviar valoración</button>
           </form>
           {ratingMessage && <p>{ratingMessage}</p>}
+
+          <div className={styles.commentsSection}>
+            <h2>💬 Comentarios</h2>
+            <input
+              type="text"
+              placeholder="Título"
+              value={commentTitle}
+              onChange={(e) => setCommentTitle(e.target.value)}
+            />
+            <textarea
+              placeholder="Escribe tu comentario..."
+              value={commentContent}
+              onChange={(e) => setCommentContent(e.target.value)}
+            />
+            <button onClick={handleCreateComment}>Publicar comentario</button>
+
+            <ul className={styles.commentList}>
+  {comments.map((comment) => (
+    <li key={comment.id} className={styles.commentCard}>
+      {editCommentId === comment.id ? (
+        <>
+          <input
+            type="text"
+            value={editCommentTitle}
+            onChange={(e) => setEditCommentTitle(e.target.value)}
+            placeholder="Nuevo título"
+            className={styles.commentInput}
+          />
+          <textarea
+            value={editCommentContent}
+            onChange={(e) => setEditCommentContent(e.target.value)}
+            placeholder="Nuevo comentario"
+            className={styles.commentTextarea}
+          />
+          <div className={styles.commentButtons}>
+            <button onClick={handleEditComment} className={styles.saveButton}>Guardar</button>
+            <button onClick={() => setEditCommentId(null)} className={styles.cancelButton}>Cancelar</button>
+          </div>
+        </>
+      ) : (
+        <>
+          <strong>{comment.title}</strong><br />
+          {comment.content}<br />
+          <small>{format(new Date(comment.created_at), "dd/MM/yyyy HH:mm")}</small>
+          {String(comment.user) === String(userId) && (
+            <div className={styles.commentButtons}>
+              <button
+                className={styles.editButton}
+                onClick={() => {
+                  setEditCommentId(comment.id);
+                  setEditCommentTitle(comment.title);
+                  setEditCommentContent(comment.content);
+                }}
+              >
+                Editar
+              </button>
+              <button
+                className={styles.deleteButton}
+                onClick={() => handleDeleteComment(comment.id)}
+              >
+                Eliminar
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </li>
+  ))}
+</ul>
+
+          </div>
+        </div>
+
+        <div className={styles.rightPanel}>
+          <div className={styles.extraInfoBox}>
+            <h3>📜 Historial de pujas</h3>
+            {bids.length === 0 ? (
+              <p>No hay pujas todavía.</p>
+            ) : (
+              <ul>
+                {bids.map((bid, index) => (
+                  <li key={index}>
+                    💰 <strong>{Number(bid.amount).toFixed(2)}€</strong><br />
+                    👤 {bid.bidder_username}<br />
+                    ⏱ {format(new Date(bid.timestamp), "dd/MM/yyyy HH:mm")}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div className={styles.extraInfoBox}>
+            <p>⭐ <strong>Valoración media global de subastas:</strong> {globalAverage || "No disponible"}</p>
+          </div>
         </div>
       </div>
     </Layout>

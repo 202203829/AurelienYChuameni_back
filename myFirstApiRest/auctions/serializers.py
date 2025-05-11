@@ -101,4 +101,15 @@ class BidSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = ['id', 'value', 'user', 'auction']
+        fields = '__all__'
+        read_only_fields = ['user']
+from rest_framework import serializers
+from .models import Comment
+
+class CommentSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'title', 'content', 'created_at', 'modified_at', 'user', 'username', 'auction']
+        read_only_fields = ['user', 'created_at', 'modified_at']

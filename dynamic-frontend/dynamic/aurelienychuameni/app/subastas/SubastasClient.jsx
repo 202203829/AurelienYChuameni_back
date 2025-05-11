@@ -1,4 +1,3 @@
-// app/subastas/SubastasClient.jsx
 "use client";
 
 import Layout from "../componentes/Layout/Layout";
@@ -9,10 +8,12 @@ import { useSearchParams } from "next/navigation";
 
 const SubastasClient = () => {
   const [subastas, setSubastas] = useState([]);
+  const [subastasFiltradas, setSubastasFiltradas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [precioMax, setPrecioMax] = useState(100000);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
-  const [subastasFiltradas, setSubastasFiltradas] = useState([]);
+  const [estadoSeleccionado, setEstadoSeleccionado] = useState("Todas");
+  const [ratingMin, setRatingMin] = useState(0);
   const [categorias, setCategorias] = useState([]);
 
   const searchParams = useSearchParams();
@@ -45,22 +46,37 @@ const SubastasClient = () => {
 
   useEffect(() => {
     aplicarFiltros();
-  }, [subastas, precioMax, categoriaSeleccionada, searchQuery]);
+  }, [subastas, precioMax, categoriaSeleccionada, estadoSeleccionado, ratingMin, searchQuery]);
 
   const aplicarFiltros = () => {
-    let filtradas = subastas.filter(
-      (s) =>
-        s.price <= precioMax &&
-        (categoriaSeleccionada === "Todas" || s.category_data?.name === categoriaSeleccionada)
-    );
+    let filtradas = subastas.filter((s) => {
+      const cumplePrecio = s.price <= precioMax;
+      const cumpleCategoria =
+        categoriaSeleccionada === "Todas" || s.category_data?.name === categoriaSeleccionada;
 
-    if (searchQuery) {
-      filtradas = filtradas.filter(
-        (s) =>
-          s.title.toLowerCase().includes(searchQuery) ||
-          s.description.toLowerCase().includes(searchQuery)
+      const cumpleRating = s.average_rating === null || s.average_rating >= ratingMin;
+
+      const ahora = new Date();
+      const cierre = new Date(s.closing_date);
+      const estaAbierta = ahora < cierre;
+
+      const cumpleEstado =
+        estadoSeleccionado === "Todas" ||
+        (estadoSeleccionado === "Abiertas" && estaAbierta) ||
+        (estadoSeleccionado === "Cerradas" && !estaAbierta);
+
+      const cumpleBusqueda =
+        s.title.toLowerCase().includes(searchQuery) ||
+        s.description.toLowerCase().includes(searchQuery);
+
+      return (
+        cumplePrecio &&
+        cumpleCategoria &&
+        cumpleEstado &&
+        cumpleRating &&
+        cumpleBusqueda
       );
-    }
+    });
 
     setSubastasFiltradas(filtradas);
   };
@@ -77,33 +93,50 @@ const SubastasClient = () => {
 
       <div className={styles.filters}>
         <div>
-          <label htmlFor="precio">Precio máximo:</label>
+          <label>Precio máximo:</label>
           <input
             type="range"
-            id="precio"
             min="0"
             max="100000"
             value={precioMax}
             onChange={(e) => setPrecioMax(Number(e.target.value))}
-            style={{
-              background: `linear-gradient(to right, #ff6600 0%, #ff6600 ${precioMax / 1000}% , #ddd ${precioMax / 1000}% , #ddd 100%)`,
-            }}
           />
           <span>{precioMax}€</span>
         </div>
 
         <div>
-          <label htmlFor="categoria">Categoría:</label>
+          <label>Categoría:</label>
           <select
-            id="categoria"
             value={categoriaSeleccionada}
             onChange={(e) => setCategoriaSeleccionada(e.target.value)}
           >
             <option value="Todas">Todas</option>
-            {categorias.map((cat, index) => (
-              <option key={`${cat}-${index}`} value={cat}>
-                {cat}
-              </option>
+            {categorias.map((cat, i) => (
+              <option key={i} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label>Estado:</label>
+          <select
+            value={estadoSeleccionado}
+            onChange={(e) => setEstadoSeleccionado(e.target.value)}
+          >
+            <option value="Todas">Todas</option>
+            <option value="Abiertas">Abiertas</option>
+            <option value="Cerradas">Cerradas</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Valoración mínima:</label>
+          <select
+            value={ratingMin}
+            onChange={(e) => setRatingMin(Number(e.target.value))}
+          >
+            {[0, 1, 2, 3, 4, 5].map((val) => (
+              <option key={val} value={val}>{val} ⭐</option>
             ))}
           </select>
         </div>
@@ -117,20 +150,15 @@ const SubastasClient = () => {
         ) : subastasFiltradas.length === 0 ? (
           <p>No hay subastas disponibles con esos filtros.</p>
         ) : (
-          subastasFiltradas.map((subasta) => (
-            <div className={styles.productCard} key={subasta.id}>
-              <a href={`/detalle/${subasta.id}`}>
-                <img src={subasta.thumbnail} alt={subasta.title} />
-                <h2>{subasta.title}</h2>
-                <p>{subasta.description}</p>
-                <p>
-                  <strong>Precio:</strong>{" "}
-                  {Number(subasta.price).toFixed(2)}€
-                </p>
-                <p>
-                  <strong>Categoría:</strong>{" "}
-                  {subasta.category_data?.name || "Sin categoría"}
-                </p>
+          subastasFiltradas.map((s) => (
+            <div className={styles.productCard} key={s.id}>
+              <a href={`/detalle/${s.id}`}>
+                <img src={s.thumbnail} alt={s.title} />
+                <h2>{s.title}</h2>
+                <p>{s.description}</p>
+                <p><strong>Precio:</strong> {Number(s.price).toFixed(2)}€</p>
+                <p><strong>Categoría:</strong> {s.category_data?.name || "Sin categoría"}</p>
+                <p><strong>Rating:</strong> {s.average_rating ?? "N/A"} ⭐</p>
               </a>
             </div>
           ))

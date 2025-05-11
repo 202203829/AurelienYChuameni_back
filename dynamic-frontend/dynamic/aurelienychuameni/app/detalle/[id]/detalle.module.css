@@ -1,136 +1,151 @@
-/* detalle.module.css */
 
-.container {
+.mainWrapper {
   display: flex;
-  justify-content: center;
+  gap: 30px;
   align-items: flex-start;
-  gap: 40px;
   padding: 20px;
   flex-wrap: wrap;
+  background-color: #f4f6f9;
 }
 
-/* Contenedor principal para los detalles del producto */
-.productDetail {
-  padding: 20px;
-  max-width: 600px;
+.contentPanel {
+  flex: 2;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.rightPanel {
   flex: 1;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-/* Estilo para la imagen del producto */
+.extraInfoBox {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
 .productImage {
   width: 100%;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
   margin-bottom: 20px;
 }
 
-/* Estilos para el texto de carga */
-.cargando {
-  font-size: 18px;
-  color: #888;
-  text-align: center;
-  margin-top: 50px;
-}
-
-/* Estilo para los errores */
-.error {
-  color: red;
-  font-size: 18px;
-  text-align: center;
-  margin-top: 20px;
-}
-
-/* Estilo para el botón de puja */
-.bidButton {
-  padding: 12px 24px;
+.inputNumber {
+  padding: 10px;
   font-size: 16px;
+  border: 1px solid #ccc;
+  width: 100%;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+
+.bidButton {
   background-color: #28a745;
   color: white;
+  padding: 10px 20px;
+  margin-right: 10px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-/* Cambio de color en hover */
-.bidButton:hover {
-  background-color: #218838;
+.volverBtn {
+  background-color: #4a63f5;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-/* Estilo para el mensaje de la puja */
 .bidMessage {
-  font-size: 16px;
-  color: #28a745;
+  margin-top: 10px;
+  color: green;
+  font-weight: bold;
+}
+
+.ratingForm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-top: 20px;
 }
 
-/* Estilo para los campos de input */
-.inputNumber {
-  padding: 8px;
-  font-size: 16px;
-  width: 100%;
-  max-width: 200px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin: 10px 0;
-  text-align: center;
-}
-
-.inputNumber:focus {
-  outline: none;
-  border-color: #28a745;
-}
-
-/* Botón para volver a la lista de subastas */
-.volverBtn {
-  margin-top: 30px;
-  background-color: #007bff;
+.rateButton {
+  background-color: orange;
   color: white;
-  padding: 10px 20px;
-  font-size: 15px;
   border: none;
   border-radius: 6px;
+  padding: 8px 14px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.volverBtn:hover {
-  background-color: #0056b3;
+.commentsSection {
+  margin-top: 40px;
 }
 
-/* Panel lateral de historial de pujas */
-.bidList {
-  flex: 1;
-  max-width: 400px;
-  background-color: #f4f4f4;
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
+.commentsSection h2 {
+  margin-bottom: 16px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.bidList h3 {
-  margin-bottom: 15px;
-  font-size: 1.2rem;
-  color: #333;
-}
-
-.bidList ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.bidList li {
+.commentsSection input,
+.commentsSection textarea {
+  width: 100%;
+  padding: 10px;
   margin-bottom: 10px;
-  font-size: 0.95rem;
-  color: #222;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
 }
 
-/* Estilo para la valoración promedio */
-.rating {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #ff9800;
-  margin-top: 10px;
+.commentsSection button {
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.commentList {
+  list-style: none;
+  padding: 0;
+}
+
+.commentList li {
+  padding: 15px;
+  margin-bottom: 15px;
+  background: #f8f8f8;
+  border-radius: 10px;
+  position: relative;
+}
+
+.commentList button {
+  background-color: #ff4d4d;
+  color: white;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+}
+
+.cargando,
+.error {
+  text-align: center;
+  font-size: 18px;
+  padding: 20px;
 }

@@ -1,6 +1,5 @@
-const BASE_URL = "https://aurelienychuameni-back.onrender.com/api";
-
-fetch(`${BASE_URL}/api/auctions`);
+const BASE_URL = "http://localhost:8000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 // =============== AUTH =================
 export async function registerUser(data) {
@@ -34,7 +33,7 @@ export async function fetchAuctions() {
   try {
     const res = await fetch(`${BASE_URL}/auctions/`);
     if (!res.ok) throw new Error("Error al obtener las subastas");
-    return res.json(); // <-- Esto debería devolver objetos con category.name
+    return res.json();
   } catch (error) {
     console.error("❌ fetchAuctions error:", error);
     throw error;
@@ -159,7 +158,7 @@ export async function fetchCategories() {
     const text = await res.text();
     throw new Error(`Error al obtener categorías: ${text}`);
   }
-  return res.json(); // [{id, name}]
+  return res.json();
 }
 
 export async function createCategory(name, token) {
@@ -216,17 +215,8 @@ export async function fetchUserProfile(token) {
     throw error;
   }
 }
-const eliminarPuja = async (bidId) => {
-  const token = localStorage.getItem("token");
-  if (!token) return;
 
-  try {
-    await deleteBid(bidId, token); // 🔁 necesitas esta función en la API
-    setPujas((prev) => prev.filter((b) => b.id !== bidId));
-  } catch (error) {
-    console.error("❌ Error al eliminar puja:", error);
-  }
-};
+// =============== BIDS MANAGER ===================
 export async function deleteBid(id, token) {
   const res = await fetch(`${BASE_URL}/auctions/bids/${id}/`, {
     method: "DELETE",
@@ -236,10 +226,11 @@ export async function deleteBid(id, token) {
   });
 
   if (res.status !== 204) {
-    const text = await res.text();  // Captura error HTML si lo hay
+    const text = await res.text();
     throw new Error(`Error al eliminar puja: ${text}`);
   }
 }
+
 export async function updateBid(id, data, token) {
   const res = await fetch(`${BASE_URL}/auctions/bids/${id}/`, {
     method: "PUT",
@@ -265,20 +256,28 @@ export async function fetchRatings(auctionId) {
 }
 
 export async function createOrUpdateRating(auctionId, value, token) {
-    const res = await fetch(`${BASE_URL}/auctions/ratings/${auctionId}/`, {
+  const res = await fetch(`${BASE_URL}/auctions/ratings/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ value }),
+    body: JSON.stringify({
+      auction: auctionId,
+      value,
+    }),
   });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Error al crear o actualizar valoración: ${errorText}`);
+  }
+
   return res.json();
 }
 
 export async function deleteRating(ratingId, token) {
-    const res = await fetch(`${BASE_URL}/auctions/ratings/${auctionId}/`
-, {
+  const res = await fetch(`${BASE_URL}/auctions/ratings/${ratingId}/`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -286,3 +285,127 @@ export async function deleteRating(ratingId, token) {
   });
   return res.ok;
 }
+export async function fetchGlobalAverageRating() {
+  const res = await fetch(`${BASE_URL}/auctions/ratings/global-average/`);
+  if (!res.ok) {
+    throw new Error("No se pudo obtener la media global.");
+  }
+  const data = await res.json();
+  return data.average_rating;
+}
+export async function fetchComments(auctionId, token) {
+  const res = await fetch(`${BASE_URL}/auctions/comments/?auction=${auctionId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Error al obtener comentarios:", errorText);
+    throw new Error("No se pudieron cargar los comentarios.");
+  }
+
+  return res.json();
+}
+
+// =============== COMMENTS ===================
+
+export async function createComment(commentData, token) {
+  const res = await fetch(`${BASE_URL}/auctions/comments/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(commentData),
+  });
+
+  const text = await res.text();
+
+  if (!res.ok) {
+    console.error("❌ Error al crear comentario:", text);
+    throw new Error(`Error al crear comentario: ${text}`);
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    throw new Error("❌ No se pudo parsear la respuesta JSON del comentario.");
+  }
+}
+
+
+
+export async function deleteComment(commentId, token) {
+  const res = await fetch(`${BASE_URL}/auctions/comments/${commentId}/`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("❌ Error al eliminar comentario:", text);
+    throw new Error("Error al eliminar comentario");
+  }
+
+  return true;
+}
+export async function updateComment(commentId, data, token) {
+  const res = await fetch(`${BASE_URL}/auctions/comments/${commentId}/`, {
+
+    method: "PUT", // o "PATCH" si lo prefieres
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    console.error("Error al editar comentario:", error);
+    throw new Error("Error al editar comentario");
+  }
+
+  return await res.json();
+}
+
+// =============== MIS VALORACIONES ===================
+export async function fetchMisValoraciones(token) {
+  const res = await fetch(`${BASE_URL}/auctions/ratings/mine/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("❌ Error al obtener tus valoraciones:", errorText);
+    throw new Error("Error al obtener tus valoraciones");
+  }
+
+  return res.json();
+}
+export async function updateRating(ratingId, data, token) {
+  const res = await fetch(`${BASE_URL}/auctions/ratings/${ratingId}/`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data), // ← debe incluir { auction: ..., value: ... }
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Error al actualizar valoración: ${errorText}`);
+  }
+
+  return res.json();
+}
+
+

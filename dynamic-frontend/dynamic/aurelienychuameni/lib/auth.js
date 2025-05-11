@@ -4,7 +4,7 @@ const TOKEN_KEY = "token";  // 🔑 Clave unificada para almacenar el token
 
 // 🔐 Login: obtiene access y refresh tokens
 export async function loginUser({ username, password }) {
-  const res = await fetch("https://aurelienychuameni-back.onrender.com/api/token/", {
+  const res = await fetch("http://localhost:8000/api/token/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -36,4 +36,17 @@ export function getToken() {
 export function removeToken() {
   localStorage.removeItem(TOKEN_KEY);
   window.dispatchEvent(new Event("authChanged")); // 🔄 Notifica al layout
+}
+
+export function getUserId() {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.user_id || payload.id; // depende del JWT
+  } catch (error) {
+    console.error("Error al decodificar token:", error);
+    return null;
+  }
 }
