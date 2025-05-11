@@ -118,9 +118,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://aurelien-y-chuameni-front.vercel.app",  # este sí debe estar
+    "http://localhost:3000",  # Para desarrollo local
+    "https://aurelien-y-chuameni-back-79fr.vercel.app",  # ⚠️ Tu frontend en Vercel
 ]
+CORS_ALLOW_CREDENTIALS = True  # si usas autenticación con cookies (opcional)
+
 APPEND_SLASH = False
 
 # Django REST Framework
