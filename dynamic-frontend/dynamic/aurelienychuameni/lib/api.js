@@ -265,7 +265,7 @@ export async function fetchRatings(auctionId) {
 }
 
 export async function createOrUpdateRating(auctionId, value, token) {
-  const res = await fetch(`${BASE_URL}/ratings/${auctionId}/auctions/`, {
+  const res = await fetch(`${BASE_URL}/api/auctions/${auctionId}/ratings/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

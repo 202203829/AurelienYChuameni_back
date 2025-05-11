@@ -125,7 +125,7 @@ export default function DetalleSubasta() {
     }
 
     try {
-      await createOrUpdateRating(id, rating, token);
+      await createOrUpdateRating(subasta.id, rating, token);
       setRatingMessage("Valoración enviada con éxito.");
     } catch (error) {
       console.error("Error al valorar:", error);
