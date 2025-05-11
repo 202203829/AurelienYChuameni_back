@@ -260,12 +260,12 @@ export async function updateBid(id, data, token) {
 
 // =============== RATINGS ===================
 export async function fetchRatings(auctionId) {
-  const res = await fetch(`${BASE_URL}/ratings/?auction=${auctionId}`);
+  const res = await fetch(`${BASE_URL}/auctions/ratings/${auctionId}/`);
   return res.json();
 }
 
 export async function createOrUpdateRating(auctionId, value, token) {
-  const res = await fetch(`${BASE_URL}/api/auctions/${auctionId}/ratings/`, {
+    const res = await fetch(`${BASE_URL}/auctions/ratings/${auctionId}/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -277,7 +277,8 @@ export async function createOrUpdateRating(auctionId, value, token) {
 }
 
 export async function deleteRating(ratingId, token) {
-  const res = await fetch(`${BASE_URL}/ratings/${ratingId}/`, {
+    const res = await fetch(`${BASE_URL}/auctions/ratings/${auctionId}/`
+, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
