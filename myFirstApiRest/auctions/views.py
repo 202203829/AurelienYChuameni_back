@@ -189,6 +189,7 @@ class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'post', 'put', 'delete']  # Asegurar que POST esté permitido
 
     def perform_create(self, serializer):
         auction = serializer.validated_data['auction']
