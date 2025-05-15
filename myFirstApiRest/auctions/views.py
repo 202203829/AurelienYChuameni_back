@@ -228,13 +228,26 @@ from .permissions import IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsOwnerOrReadOnly
 
+from rest_framework.permissions import AllowAny
+
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all().order_by("-created_at")
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAuthenticated(), IsOwnerOrReadOnly()]
+
+    def get_queryset(self):
+        queryset = Comment.objects.all().order_by("-created_at")
+        auction_id = self.request.query_params.get("auction")
+        if auction_id:
+            queryset = queryset.filter(auction_id=auction_id)
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated

@@ -1,14 +1,10 @@
-// auth.js
+const TOKEN_KEY = "token";
 
-const TOKEN_KEY = "token";  // 🔑 Clave unificada para almacenar el token
-
-// 🔐 Login: obtiene access y refresh tokens
+// 🔐 Login
 export async function loginUser({ username, password }) {
-  const res = await fetch("https://aurelienychuameni-back.onrender.com/api/token/", {
+  const res = await fetch("http://localhost:8000/api/token/", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
   });
 
@@ -21,30 +17,38 @@ export async function loginUser({ username, password }) {
   return res.json(); // { access, refresh }
 }
 
-// 💾 Guarda el token y notifica el cambio de sesión
+// 💾 Guarda el token (solo si window existe)
 export function saveToken(token) {
-  localStorage.setItem(TOKEN_KEY, token);
-  window.dispatchEvent(new Event("authChanged")); // 🔄 Notifica al layout
+  if (typeof window !== "undefined") {
+    localStorage.setItem(TOKEN_KEY, token);
+    window.dispatchEvent(new Event("authChanged"));
+  }
 }
 
-// 🔍 Obtiene el token actual desde localStorage
+// 🔍 Obtener token actual
 export function getToken() {
+  if (typeof window === "undefined") return null;
   return localStorage.getItem(TOKEN_KEY);
 }
 
-// 🚪 Elimina el token (logout) y notifica
+// 🚪 Logout
 export function removeToken() {
-  localStorage.removeItem(TOKEN_KEY);
-  window.dispatchEvent(new Event("authChanged")); // 🔄 Notifica al layout
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(TOKEN_KEY);
+    window.dispatchEvent(new Event("authChanged"));
+  }
 }
 
+// 🔎 Obtener ID de usuario desde el token
 export function getUserId() {
-  const token = localStorage.getItem("token");
+  if (typeof window === "undefined") return null;
+
+  const token = localStorage.getItem(TOKEN_KEY);
   if (!token) return null;
 
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.user_id || payload.id; // depende del JWT
+    return payload.user_id || payload.id;
   } catch (error) {
     console.error("Error al decodificar token:", error);
     return null;

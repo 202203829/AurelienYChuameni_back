@@ -1,4 +1,4 @@
-const BASE_URL = "https://aurelienychuameni-back.onrender.com/api";
+const BASE_URL = "http://localhost:8000/api";
 
 // =============== AUTH =================
 export async function registerUser(data) {
