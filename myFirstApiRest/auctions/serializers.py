@@ -57,8 +57,7 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
 class AuctionDetailSerializer(serializers.ModelSerializer):
     isOpen = serializers.SerializerMethodField()
     auctioneer = serializers.PrimaryKeyRelatedField(read_only=True)
-    category = CategoryListCreateSerializer(read_only=True)  # ✅ también aquí
-
+    category = CategoryListCreateSerializer(read_only=True)  
     @extend_schema_field(serializers.BooleanField())
     def get_isOpen(self, obj):
         return obj.closing_date > timezone.now()
